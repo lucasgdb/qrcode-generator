@@ -26,14 +26,23 @@ import { ResetDialog } from '../components/ResetDialog';
 const Home: NextPage = () => {
   const [url, setUrl] = useState<string>('');
   const [expanded, setExpanded] = useState<string | false>('contentPanel');
-  const [backgroundColor, setBackgroundColor] = useState('#fff');
-  const [foregroundColor, setForegroundColor] = useState('#000');
-  const [includeImage, setIncludeImage] = useState(false);
-  const [image, setImage] = useState<string | null>(null);
-  const [imageDimension, setImageDimension] = useState(360);
+  const [backgroundColor, setBackgroundColor] = useState('#ffffff');
+  const [foregroundColor, setForegroundColor] = useState('#000000');
+  const [includeLogo, setIncludeLogo] = useState(false);
+  const [logo, setLogo] = useState<string | null>(null);
   const [logoWidth, setLogoWidth] = useState(24);
   const [logoHeight, setLogoHeight] = useState(24);
+  const [imageDimension, setImageDimension] = useState(360);
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
+
+  const isResetButtonEnabled =
+    url !== '' ||
+    backgroundColor !== '#ffffff' ||
+    foregroundColor !== '#000000' ||
+    includeLogo !== false ||
+    logo !== null ||
+    logoWidth !== 24 ||
+    logoHeight !== 24;
 
   function handleChangeUrl(event: React.ChangeEvent<HTMLInputElement>) {
     setUrl(event.target.value);
@@ -56,8 +65,8 @@ const Home: NextPage = () => {
     setImageDimension(newImageDimension);
   }
 
-  function handleChangeIncludeImage(event: React.ChangeEvent<HTMLInputElement>) {
-    setIncludeImage(event.target.checked);
+  function handleChangeIncludeLogo(event: React.ChangeEvent<HTMLInputElement>) {
+    setIncludeLogo(event.target.checked);
   }
 
   function handleChangeImageWidth(event: React.ChangeEvent<HTMLInputElement>) {
@@ -85,7 +94,7 @@ const Home: NextPage = () => {
     }
 
     const imageUrl = await getFileUrl(file);
-    setImage(imageUrl);
+    setLogo(imageUrl);
   }
 
   function handleOpenResetDialog() {
@@ -98,10 +107,10 @@ const Home: NextPage = () => {
 
   function handleResetQRCode() {
     setUrl('');
-    setBackgroundColor('#fff');
-    setForegroundColor('#000');
-    setIncludeImage(false);
-    setImage(null);
+    setBackgroundColor('#ffffff');
+    setForegroundColor('#000000');
+    setIncludeLogo(false);
+    setLogo(null);
     setLogoWidth(24);
     setLogoHeight(24);
   }
@@ -173,13 +182,13 @@ const Home: NextPage = () => {
             <AccordionDetails>
               <FormGroup>
                 <FormControlLabel
-                  control={<Checkbox checked={includeImage} onChange={handleChangeIncludeImage} />}
+                  control={<Checkbox checked={includeLogo} onChange={handleChangeIncludeLogo} />}
                   label="Incluir imagem"
                 />
               </FormGroup>
 
               <div className="flex flex-col gap-4">
-                <Button variant="contained" component="label" disabled={!includeImage}>
+                <Button variant="contained" component="label" disabled={!includeLogo}>
                   Carregar imagem
                   <input type="file" accept="image/*" hidden onChange={handleFileUpload} />
                 </Button>
@@ -192,7 +201,7 @@ const Home: NextPage = () => {
                   value={logoWidth}
                   onChange={handleChangeImageWidth}
                   InputProps={{ type: 'number' }}
-                  disabled={!includeImage}
+                  disabled={!includeLogo}
                   fullWidth
                 />
 
@@ -204,7 +213,7 @@ const Home: NextPage = () => {
                   value={logoHeight}
                   onChange={handleChangeImageHeight}
                   InputProps={{ type: 'number' }}
-                  disabled={!includeImage}
+                  disabled={!includeLogo}
                   fullWidth
                 />
               </div>
@@ -222,9 +231,9 @@ const Home: NextPage = () => {
               level="L"
               id="qrcode"
               imageSettings={
-                includeImage && image
+                includeLogo && logo
                   ? {
-                      src: image,
+                      src: logo,
                       x: undefined,
                       y: undefined,
                       width: logoWidth,
@@ -248,6 +257,7 @@ const Home: NextPage = () => {
                   size="large"
                   className="rounded-lg"
                   fullWidth
+                  disabled={!isResetButtonEnabled}
                   onClick={handleOpenResetDialog}
                 >
                   Resetar
