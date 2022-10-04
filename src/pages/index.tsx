@@ -8,6 +8,7 @@ import {
   Checkbox,
   FormControlLabel,
   FormGroup,
+  IconButton,
   Slider,
   TextField,
   Typography,
@@ -54,8 +55,8 @@ const Home: NextPage = () => {
     setUrl(event.target.value);
   }
 
-  const handleChange = (panel: string) => () => {
-    setExpanded(panel);
+  const handleChange = (panel: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
+    setExpanded(isExpanded ? panel : false);
   };
 
   function handleChangeBackgroundColor(color: ColorResult) {
@@ -147,7 +148,13 @@ const Home: NextPage = () => {
       <Container className="flex flex-col-reverse md:flex-row gap-8 flex-1 my-4">
         <div className="flex flex-col gap-4 flex-1">
           <Accordion expanded={expanded === 'contentPanel'} onChange={handleChange('contentPanel')}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <AccordionSummary
+              expandIcon={
+                <IconButton>
+                  <ExpandMoreIcon />
+                </IconButton>
+              }
+            >
               <Typography variant="button">Conteúdo</Typography>
             </AccordionSummary>
 
@@ -165,7 +172,13 @@ const Home: NextPage = () => {
           </Accordion>
 
           <Accordion expanded={expanded === 'colorPanel'} onChange={handleChange('colorPanel')}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <AccordionSummary
+              expandIcon={
+                <IconButton>
+                  <ExpandMoreIcon />
+                </IconButton>
+              }
+            >
               <Typography variant="button">Cor</Typography>
             </AccordionSummary>
 
@@ -195,7 +208,13 @@ const Home: NextPage = () => {
           </Accordion>
 
           <Accordion expanded={expanded === 'logoPanel'} onChange={handleChange('logoPanel')}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <AccordionSummary
+              expandIcon={
+                <IconButton>
+                  <ExpandMoreIcon />
+                </IconButton>
+              }
+            >
               <Typography variant="button">Logo</Typography>
             </AccordionSummary>
 
@@ -247,7 +266,13 @@ const Home: NextPage = () => {
           </Accordion>
 
           <Accordion expanded={expanded === 'levelPanel'} onChange={handleChange('levelPanel')}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <AccordionSummary
+              expandIcon={
+                <IconButton>
+                  <ExpandMoreIcon />
+                </IconButton>
+              }
+            >
               <Typography variant="button">Nível</Typography>
             </AccordionSummary>
 
