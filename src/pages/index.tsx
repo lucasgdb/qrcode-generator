@@ -4,6 +4,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Button,
+  ButtonGroup,
   Checkbox,
   FormControlLabel,
   FormGroup,
@@ -23,11 +24,14 @@ import { getFileUrl } from '../utils/getFileUrl';
 import { convertSvgToImage } from '../utils/convertSvgToImage';
 import { ResetDialog } from '../components/ResetDialog';
 
+type Level = 'L' | 'M' | 'Q' | 'H';
+
 const Home: NextPage = () => {
   const [url, setUrl] = useState<string>('');
   const [expanded, setExpanded] = useState<string | false>('contentPanel');
   const [backgroundColor, setBackgroundColor] = useState('#ffffff');
   const [foregroundColor, setForegroundColor] = useState('#000000');
+  const [level, setLevel] = useState<Level>('L');
   const [includeLogo, setIncludeLogo] = useState(false);
   const [logo, setLogo] = useState<string | null>(null);
   const [logoName, setLogoName] = useState<string | null>('');
@@ -40,6 +44,7 @@ const Home: NextPage = () => {
     url !== '' ||
     backgroundColor !== '#ffffff' ||
     foregroundColor !== '#000000' ||
+    level !== 'L' ||
     includeLogo !== false ||
     logo !== null ||
     logoWidth !== 24 ||
@@ -59,6 +64,12 @@ const Home: NextPage = () => {
 
   function handleChangeForegroundColor(color: ColorResult) {
     setForegroundColor(color.hex);
+  }
+
+  function handleChangeLevel(level: Level) {
+    return function () {
+      setLevel(level);
+    };
   }
 
   function handleChangeImageDimension(_event: Event, value: number | number[]) {
@@ -115,6 +126,7 @@ const Home: NextPage = () => {
     setUrl('');
     setBackgroundColor('#ffffff');
     setForegroundColor('#000000');
+    setLevel('L');
     setIncludeLogo(false);
     setLogo(null);
     setLogoName('');
@@ -145,6 +157,7 @@ const Home: NextPage = () => {
                 label="URL"
                 placeholder="https://google.com"
                 size="small"
+                value={url}
                 onChange={handleChangeUrl}
                 fullWidth
               />
@@ -232,17 +245,40 @@ const Home: NextPage = () => {
               </div>
             </AccordionDetails>
           </Accordion>
+
+          <Accordion expanded={expanded === 'levelPanel'} onChange={handleChange('levelPanel')}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="button">Nível</Typography>
+            </AccordionSummary>
+
+            <AccordionDetails>
+              <ButtonGroup size="small" aria-label="small button group">
+                <Button variant={level === 'L' ? 'contained' : 'outlined'} onClick={handleChangeLevel('L')}>
+                  L
+                </Button>
+                <Button variant={level === 'M' ? 'contained' : 'outlined'} onClick={handleChangeLevel('M')}>
+                  M
+                </Button>
+                <Button variant={level === 'Q' ? 'contained' : 'outlined'} onClick={handleChangeLevel('Q')}>
+                  Q
+                </Button>
+                <Button variant={level === 'H' ? 'contained' : 'outlined'} onClick={handleChangeLevel('H')}>
+                  H
+                </Button>
+              </ButtonGroup>
+            </AccordionDetails>
+          </Accordion>
         </div>
 
         <div className="flex justify-center">
           <div className="flex flex-col items-center gap-4 max-w-[256px]">
             <QRCodeSVG
+              id="qrcode"
               value={url}
               size={256}
               bgColor={backgroundColor}
               fgColor={foregroundColor}
-              level="L"
-              id="qrcode"
+              level={level}
               imageSettings={
                 includeLogo && logo
                   ? {
