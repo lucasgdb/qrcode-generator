@@ -98,6 +98,9 @@ const Home: NextPage = () => {
 
     const imageUrl = await getFileUrl(file);
     setLogo(imageUrl);
+
+    // @ts-ignore
+    event.target.value = null;
   }
 
   function handleOpenResetDialog() {
