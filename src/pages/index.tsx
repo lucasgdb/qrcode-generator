@@ -30,6 +30,7 @@ const Home: NextPage = () => {
   const [foregroundColor, setForegroundColor] = useState('#000000');
   const [includeLogo, setIncludeLogo] = useState(false);
   const [logo, setLogo] = useState<string | null>(null);
+  const [logoName, setLogoName] = useState<string | null>('');
   const [logoWidth, setLogoWidth] = useState(24);
   const [logoHeight, setLogoHeight] = useState(24);
   const [imageDimension, setImageDimension] = useState(360);
@@ -92,6 +93,8 @@ const Home: NextPage = () => {
     if (!file) {
       return;
     }
+
+    setLogoName(file.name);
 
     const imageUrl = await getFileUrl(file);
     setLogo(imageUrl);
@@ -192,6 +195,12 @@ const Home: NextPage = () => {
                   Carregar imagem
                   <input type="file" accept="image/*" hidden onChange={handleFileUpload} />
                 </Button>
+
+                {logoName && (
+                  <Typography variant="body2" color="#666">
+                    Nome: {logoName}
+                  </Typography>
+                )}
 
                 <TextField
                   variant="outlined"
