@@ -21,6 +21,7 @@ import download from 'downloadjs';
 
 import { getFileUrl } from '../utils/getFileUrl';
 import { convertSvgToImage } from '../utils/convertSvgToImage';
+import { ResetDialog } from '../components/ResetDialog';
 
 const Home: NextPage = () => {
   const [url, setUrl] = useState<string>('');
@@ -30,8 +31,9 @@ const Home: NextPage = () => {
   const [includeImage, setIncludeImage] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [imageDimension, setImageDimension] = useState(360);
-  const [imageWidth, setImageWidth] = useState(24);
-  const [imageHeight, setImageHeight] = useState(24);
+  const [logoWidth, setLogoWidth] = useState(24);
+  const [logoHeight, setLogoHeight] = useState(24);
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
 
   function handleChangeUrl(event: React.ChangeEvent<HTMLInputElement>) {
     setUrl(event.target.value);
@@ -59,11 +61,11 @@ const Home: NextPage = () => {
   }
 
   function handleChangeImageWidth(event: React.ChangeEvent<HTMLInputElement>) {
-    setImageWidth(event.target.valueAsNumber);
+    setLogoWidth(event.target.valueAsNumber);
   }
 
   function handleChangeImageHeight(event: React.ChangeEvent<HTMLInputElement>) {
-    setImageHeight(event.target.valueAsNumber);
+    setLogoHeight(event.target.valueAsNumber);
   }
 
   async function downloadQRCode() {
@@ -84,6 +86,24 @@ const Home: NextPage = () => {
 
     const imageUrl = await getFileUrl(file);
     setImage(imageUrl);
+  }
+
+  function handleOpenResetDialog() {
+    setIsResetDialogOpen(true);
+  }
+
+  function handleCloseResetDialog() {
+    setIsResetDialogOpen(false);
+  }
+
+  function handleResetQRCode() {
+    setUrl('');
+    setBackgroundColor('#fff');
+    setForegroundColor('#000');
+    setIncludeImage(false);
+    setImage(null);
+    setLogoWidth(24);
+    setLogoHeight(24);
   }
 
   return (
@@ -169,7 +189,7 @@ const Home: NextPage = () => {
                   label="Largura"
                   placeholder="https://google.com"
                   size="small"
-                  value={imageWidth}
+                  value={logoWidth}
                   onChange={handleChangeImageWidth}
                   InputProps={{ type: 'number' }}
                   disabled={!includeImage}
@@ -181,7 +201,7 @@ const Home: NextPage = () => {
                   label="Altura"
                   placeholder="https://google.com"
                   size="small"
-                  value={imageHeight}
+                  value={logoHeight}
                   onChange={handleChangeImageHeight}
                   InputProps={{ type: 'number' }}
                   disabled={!includeImage}
@@ -207,8 +227,8 @@ const Home: NextPage = () => {
                       src: image,
                       x: undefined,
                       y: undefined,
-                      width: imageWidth,
-                      height: imageHeight,
+                      width: logoWidth,
+                      height: logoHeight,
                       excavate: true,
                     }
                   : undefined
@@ -221,13 +241,28 @@ const Home: NextPage = () => {
               </Typography>
               <Slider size="small" value={imageDimension} min={360} max={1000} onChange={handleChangeImageDimension} />
 
-              <Button variant="contained" size="large" className="rounded-lg md:w-full" onClick={downloadQRCode}>
-                Baixar
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  size="large"
+                  className="rounded-lg"
+                  fullWidth
+                  onClick={handleOpenResetDialog}
+                >
+                  Resetar
+                </Button>
+
+                <Button variant="contained" size="large" className="rounded-lg" fullWidth onClick={downloadQRCode}>
+                  Baixar
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </Container>
+
+      <ResetDialog open={isResetDialogOpen} onClose={handleCloseResetDialog} onConfirm={handleResetQRCode} />
     </>
   );
 };
