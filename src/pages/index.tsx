@@ -117,6 +117,7 @@ const Home: NextPage = () => {
     setForegroundColor('#000000');
     setIncludeLogo(false);
     setLogo(null);
+    setLogoName('');
     setLogoWidth(24);
     setLogoHeight(24);
   }
@@ -135,7 +136,7 @@ const Home: NextPage = () => {
         <div className="flex flex-col gap-4 flex-1">
           <Accordion expanded={expanded === 'contentPanel'} onChange={handleChange('contentPanel')}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography>Conteúdo</Typography>
+              <Typography variant="button">Conteúdo</Typography>
             </AccordionSummary>
 
             <AccordionDetails>
@@ -152,7 +153,7 @@ const Home: NextPage = () => {
 
           <Accordion expanded={expanded === 'colorPanel'} onChange={handleChange('colorPanel')}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography>Cor</Typography>
+              <Typography variant="button">Cor</Typography>
             </AccordionSummary>
 
             <AccordionDetails className="flex flex-wrap gap-4">
@@ -182,7 +183,7 @@ const Home: NextPage = () => {
 
           <Accordion expanded={expanded === 'logoPanel'} onChange={handleChange('logoPanel')}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography>Logo</Typography>
+              <Typography variant="button">Logo</Typography>
             </AccordionSummary>
 
             <AccordionDetails>
@@ -257,7 +258,7 @@ const Home: NextPage = () => {
             />
 
             <div className="flex flex-col gap-2 w-full">
-              <Typography>
+              <Typography variant="caption" color="CaptionText">
                 Dimensão: {imageDimension}px x {imageDimension}px
               </Typography>
               <Slider size="small" value={imageDimension} min={360} max={1000} onChange={handleChangeImageDimension} />
