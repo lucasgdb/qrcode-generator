@@ -1,4 +1,3 @@
-import type { NextPage } from 'next';
 import {
   Accordion,
   AccordionDetails,
@@ -23,11 +22,14 @@ import download from 'downloadjs';
 
 import { getFileUrl } from '../utils/getFileUrl';
 import { convertSvgToImage } from '../utils/convertSvgToImage';
-import { ResetDialog } from '../components/ResetDialog';
+import { useMounted } from '../hooks/useMounted';
+import ResetDialog from '../components/ResetDialog';
 
 type Level = 'L' | 'M' | 'Q' | 'H';
 
-const Home: NextPage = () => {
+export default function Home() {
+  const mounted = useMounted();
+
   const [url, setUrl] = useState<string>('');
   const [expanded, setExpanded] = useState<string | false>('contentPanel');
   const [backgroundColor, setBackgroundColor] = useState('#ffffff');
@@ -40,6 +42,10 @@ const Home: NextPage = () => {
   const [logoHeight, setLogoHeight] = useState(24);
   const [imageDimension, setImageDimension] = useState(360);
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
+
+  if (!mounted) {
+    return false;
+  }
 
   const isResetButtonEnabled =
     url !== '' ||
@@ -349,6 +355,4 @@ const Home: NextPage = () => {
       <ResetDialog open={isResetDialogOpen} onClose={handleCloseResetDialog} onConfirm={handleResetQRCode} />
     </>
   );
-};
-
-export default Home;
+}
