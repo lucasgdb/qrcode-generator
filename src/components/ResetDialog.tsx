@@ -6,7 +6,7 @@ interface Props {
   onConfirm(): void;
 }
 
-export function ResetDialog({ open, onClose, onConfirm }: Props) {
+export default function ResetDialog({ open, onClose, onConfirm }: Props) {
   function handleConfirm() {
     onConfirm();
     onClose();
