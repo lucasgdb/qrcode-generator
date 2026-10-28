@@ -183,8 +183,11 @@ export default function Home({ route }: HomeProps) {
   useEffect(() => {
     const marker = actionsEndRef.current;
     if (!marker || typeof IntersectionObserver === 'undefined') return;
-    const observer = new IntersectionObserver(([entry]) =>
-      setActionsFloating(!entry.isIntersecting && entry.boundingClientRect.top > 0),
+    // The marker ends the page, flush with the window's bottom edge once scrolled to the end;
+    // a little slack keeps it from reading as off screen on fractional scroll positions.
+    const observer = new IntersectionObserver(
+      ([entry]) => setActionsFloating(!entry.isIntersecting && entry.boundingClientRect.top > 0),
+      { rootMargin: '0px 0px 4px 0px' },
     );
     observer.observe(marker);
     return () => observer.disconnect();

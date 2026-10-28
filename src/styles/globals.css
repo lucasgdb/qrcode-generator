@@ -564,20 +564,13 @@
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition:
-      background-color var(--duration) var(--ease),
-      padding var(--duration-panel) var(--ease);
+    transition: background-color var(--duration) var(--ease);
   }
 
   /* Closed, the whole row is the target and takes the hover fill. Open, question and answer
      read as one block: no fill that would stop at the answer's edge, only a darker icon. */
   .faq__item:not([data-open]) .faq__question:hover {
     background: var(--hover-surface);
-  }
-
-  /* Eases in step with the panel's height, so the answer slides up under the question. */
-  .faq__item[data-open] .faq__question {
-    padding-bottom: 10px;
   }
 
   .faq__answer {
@@ -871,7 +864,7 @@
     gap: 12px;
     margin: 0 -16px;
     padding: 16px;
-    border-top: 1px solid transparent;
+    border-top: 1px solid var(--color-border);
     background: var(--color-background);
     transition:
       border-color var(--duration) var(--ease),
@@ -886,8 +879,10 @@
     }
   }
 
+  /* Zero-height marker after the bar; cancels the column gap so the page ends on the bar. */
   .actions-end {
     height: 0;
+    margin-top: -16px;
   }
 
   .actions__main {
