@@ -249,9 +249,15 @@ function Screen({ type, values }: PhonePreviewProps) {
   }
 }
 
+/** The type's hue, or for a social profile the chosen network's own brand color. */
+function previewHue(type: QrTypeDef, values: Record<string, string>): string {
+  if (type.id !== 'social') return TYPE_HUE[type.id];
+  return (SOCIAL_NETWORKS.find((item) => item.value === values.network) ?? SOCIAL_NETWORKS[0]).color;
+}
+
 export default function PhonePreview({ type, values }: PhonePreviewProps) {
   return (
-    <figure data-slot="phone-preview" className="phone" style={{ '--hue': TYPE_HUE[type.id] } as CSSProperties}>
+    <figure data-slot="phone-preview" className="phone" style={{ '--hue': previewHue(type, values) } as CSSProperties}>
       <div className="phone__frame">
         <span className="phone__notch" aria-hidden="true" />
         <Screen type={type} values={values} />
