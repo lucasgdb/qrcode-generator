@@ -2207,6 +2207,25 @@
       order: -1;
     }
 
+    /* Stacked, the FAQ follows the preview: unwrap the form column so its sections join the
+       single column, then move the FAQ after the phone. Same 16px rhythm as the column had. */
+    .app[data-step='2'] .workspace {
+      gap: 16px;
+    }
+
+    .app[data-step='2'] .workspace__main,
+    .app[data-step='2'] .step {
+      display: contents;
+    }
+
+    .app[data-step='2'] .workspace__preview {
+      margin-top: 16px;
+    }
+
+    .app[data-step='2'] .faq {
+      order: 1;
+    }
+
     .app[data-step='3'] .qr-preview {
       max-width: 380px;
       margin: 0 auto;
