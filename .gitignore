@@ -31,6 +31,10 @@ yarn-error.log*
 # vercel
 .vercel
 
-# typescript
+# typecheck
 *.tsbuildinfo
 next-env.d.ts
+
+# local work files
+.tmp/
+.taste-skill/

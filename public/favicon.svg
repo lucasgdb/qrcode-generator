@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20">
+  <style>
+    .tile { fill: #171717; }
+    .module { fill: #ffffff; }
+    @media (prefers-color-scheme: dark) {
+      .tile { fill: #fafafa; }
+      .module { fill: #171717; }
+    }
+  </style>
+  <rect class="tile" x="2" y="2" width="20" height="20" rx="6"/>
+  <rect class="module" x="6.5" y="6.5" width="4.5" height="4.5" rx="1.2"/>
+  <rect class="module" x="13" y="6.5" width="4.5" height="4.5" rx="1.2"/>
+  <rect class="module" x="6.5" y="13" width="4.5" height="4.5" rx="1.2"/>
+  <rect class="module" x="13.5" y="13.5" width="3.5" height="3.5" rx="1"/>
+</svg>
