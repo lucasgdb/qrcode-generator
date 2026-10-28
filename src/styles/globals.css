@@ -385,6 +385,13 @@
     padding: var(--main-gap) 24px 64px;
   }
 
+  /* Past the picker the page ends on the action bar, whose own padding is the bottom edge. */
+  @media (min-width: 1024px) {
+    .app:not([data-step='1']) .main {
+      padding-bottom: 0;
+    }
+  }
+
   /* Skip link: off screen until focused by the keyboard. */
   .skip-link {
     position: fixed;
@@ -862,7 +869,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    margin: 8px -16px 0;
+    margin: 0 -16px;
     padding: 16px;
     border-top: 1px solid transparent;
     background: var(--color-background);
@@ -875,7 +882,7 @@
   @media (min-width: 1024px) {
     .actions[data-floating] {
       border-top-color: var(--color-border);
-      box-shadow: 0 -12px 24px -20px rgb(23 23 23 / 0.35);
+      box-shadow: 0 -10px 28px -18px rgb(23 23 23 / 0.1);
     }
   }
 
@@ -2262,10 +2269,6 @@
     .actions {
       padding-left: 16px;
       padding-right: 16px;
-    }
-
-    .main {
-      padding-bottom: calc(96px + env(safe-area-inset-bottom));
     }
 
     .preview-title {
