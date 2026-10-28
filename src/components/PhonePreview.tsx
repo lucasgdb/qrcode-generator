@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react';
 
 import { PersonGlyph, TypeIcon } from './icons';
-import { TYPE_HUE } from './TypePicker';
+import { TYPE_HUE } from '../lib/type-hue';
 import { SOCIAL_NETWORKS, type QrTypeDef } from '../lib/types';
 
 export interface PhonePreviewProps {

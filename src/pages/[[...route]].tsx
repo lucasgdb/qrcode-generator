@@ -10,8 +10,10 @@ import MiniPreview from '../components/MiniPreview';
 import PhonePreview from '../components/PhonePreview';
 import QrPreview from '../components/QrPreview';
 import SegmentedControl from '../components/SegmentedControl';
+import Seo from '../components/Seo';
 import Stepper from '../components/Stepper';
-import TypePicker, { TYPE_HUE } from '../components/TypePicker';
+import TypePicker from '../components/TypePicker';
+import { TYPE_HUE } from '../lib/type-hue';
 import { Button } from '../components/ui/button';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
@@ -33,7 +35,7 @@ interface HomeProps {
 
 export default function Home({ route }: HomeProps) {
   const studio = useQrStudio(route.type ?? 'link');
-  const { step, goTo } = useRoute(route, studio.setType);
+  const { step, routeType, goTo } = useRoute(route, studio.setType);
   const [toast, setToast] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [copying, setCopying] = useState(false);
@@ -221,22 +223,9 @@ export default function Home({ route }: HomeProps) {
   return (
     <>
       <Head>
-        <title>Gerador de QR Code grátis: link, Wi-Fi, PIX e mais</title>
-        <meta
-          name="description"
-          content="Crie QR Codes de link, texto, Wi-Fi, PIX, contato, e-mail, WhatsApp e eventos. Escolha moldura, cores, formato e logo e baixe em PNG, SVG ou JPEG. Tudo no seu navegador."
-        />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <meta name="theme-color" content="#fafafa" />
-        <meta property="og:title" content="Gerador de QR Code" />
-        <meta
-          property="og:description"
-          content="Escolha o tipo, preencha o conteúdo, personalize e baixe seu QR Code em PNG, SVG ou JPEG."
-        />
-        <meta property="og:type" content="website" />
-        <meta property="og:locale" content="pt_BR" />
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </Head>
+      <Seo type={step === 1 ? null : routeType} />
 
       <div className="app" data-step={step} data-motion={motionReady || undefined}>
         {/* The hash holds the route, so the skip link moves focus instead of following its href. */}

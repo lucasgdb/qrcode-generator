@@ -18,6 +18,8 @@
   "packageManager": "pnpm@12.15.0",
   "dependencies": {
     "@base-ui/react": "1.9.0",
+    "@vercel/analytics": "2.0.1",
+    "@vercel/speed-insights": "2.0.0",
     "class-variance-authority": "0.7.1",
     "cn": "0.5.0",
     "country-flag-icons": "1.6.20",

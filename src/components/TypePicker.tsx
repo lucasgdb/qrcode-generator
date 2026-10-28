@@ -1,30 +1,17 @@
 import type { CSSProperties } from 'react';
 
 import Brand from './Brand';
+import FaqList from './FaqList';
 import { Badge } from './ui/badge';
 import { TypeIcon } from './icons';
+import { routeHref } from '../hooks/useRoute';
+import { homeSeo } from '../lib/seo-content';
 import { QR_TYPES, type QrTypeId } from '../lib/types';
+import { TYPE_HUE } from '../lib/type-hue';
 
 export interface TypePickerProps {
   onSelect(type: QrTypeId): void;
 }
-
-/** One hue per family of content: web, messages, money, places and people. */
-export const TYPE_HUE: Record<QrTypeId, string> = {
-  link: '#2563eb',
-  social: '#db2777',
-  video: '#d7263d',
-  text: '#3f3f46',
-  wifi: '#0e8a6a',
-  vcard: '#d7263d',
-  pix: '#0f9d8a',
-  email: '#c2410c',
-  sms: '#0e8a6a',
-  whatsapp: '#16a34a',
-  phone: '#2563eb',
-  geo: '#d7263d',
-  event: '#b45309',
-};
 
 /** Brand and technical names that machine translation would garble. */
 const UNTRANSLATED = new Set<QrTypeId>(['whatsapp', 'pix', 'sms', 'wifi']);
@@ -43,10 +30,15 @@ export default function TypePicker({ onSelect }: TypePickerProps) {
       <ul className="picker__grid">
         {QR_TYPES.map((type) => (
           <li key={type.id}>
-            <button
-              type="button"
+            {/* A real link, so search engines find every type's page; plain clicks stay in the app. */}
+            <a
               className="type-card"
-              onClick={() => onSelect(type.id)}
+              href={routeHref(2, type.id)}
+              onClick={(event) => {
+                if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
+                event.preventDefault();
+                onSelect(type.id);
+              }}
               style={{ '--hue': TYPE_HUE[type.id] } as CSSProperties}
             >
               <span className="type-card__icon">
@@ -60,10 +52,12 @@ export default function TypePicker({ onSelect }: TypePickerProps) {
               </span>
               {type.id === 'link' ? <Badge variant="ink">Mais usado</Badge> : null}
               {type.isNew ? <Badge variant="ink">Novo</Badge> : null}
-            </button>
+            </a>
           </li>
         ))}
       </ul>
+
+      <FaqList title="Perguntas frequentes" items={homeSeo.faq} />
     </section>
   );
 }

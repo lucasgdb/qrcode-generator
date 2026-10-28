@@ -53,6 +53,7 @@
   --focus-ring: 0 0 0 3px rgb(163 163 163 / 0.35);
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --duration: 200ms;
+  --duration-panel: 260ms;
   --masthead-height: 68px;
   --main-gap: 48px;
 }
@@ -170,6 +171,15 @@
     background: var(--color-card);
     border-bottom: 1px solid var(--color-border);
     view-transition-name: masthead;
+  }
+
+  /* Frosted: what scrolls underneath stays legible as a soft blur, never under the steps. */
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    .masthead {
+      background: color-mix(in oklab, var(--color-card) 72%, transparent);
+      -webkit-backdrop-filter: saturate(1.8) blur(16px);
+      backdrop-filter: saturate(1.8) blur(16px);
+    }
   }
 
   .masthead .stepper {
@@ -518,6 +528,62 @@
     font-size: 13.5px;
     color: var(--color-muted-foreground);
     line-height: 1.4;
+  }
+
+  /* FAQ: visible answers, the same ones the FAQPage JSON-LD describes. */
+  .faq {
+    margin-top: 48px;
+  }
+
+  .faq__title {
+    margin: 0 0 16px;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .faq__list {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-tile);
+    background: var(--color-card);
+    overflow: hidden;
+  }
+
+  .faq__question {
+    width: 100%;
+    padding: 16px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background-color var(--duration) var(--ease),
+      padding var(--duration-panel) var(--ease);
+  }
+
+  /* Closed, the whole row is the target and takes the hover fill. Open, question and answer
+     read as one block: no fill that would stop at the answer's edge, only a darker icon. */
+  .faq__item:not([data-open]) .faq__question:hover {
+    background: var(--hover-surface);
+  }
+
+  /* Eases in step with the panel's height, so the answer slides up under the question. */
+  .faq__item[data-open] .faq__question {
+    padding-bottom: 10px;
+  }
+
+  .faq__answer {
+    margin: 0;
+    padding: 0 20px 20px;
+    color: var(--color-muted-foreground);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .type-card {
+    color: inherit;
+    text-decoration: none;
   }
 
   /* Workspace (steps 2 and 3) ----------------------------------------------- */

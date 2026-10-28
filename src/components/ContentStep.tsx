@@ -1,12 +1,14 @@
 import { ArrowLeftRight, CircleCheck, CircleDashed, FileText, Lightbulb, Sparkles } from 'lucide-react';
 import { useId, type CSSProperties, type ReactNode } from 'react';
 
+import FaqList from './FaqList';
 import FieldControl from './FieldControl';
 import { TypeIcon } from './icons';
-import { TYPE_HUE } from './TypePicker';
+import { TYPE_HUE } from '../lib/type-hue';
 import { Button } from './ui/button';
 import { FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet } from './ui/field';
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from './ui/input-group';
+import { typeSeo } from '../lib/seo-content';
 import { socialPrefix, type FieldDef, type QrTypeDef } from '../lib/types';
 
 export interface ContentStepProps {
@@ -89,7 +91,7 @@ export default function ContentStep({
         </span>
         <div className="step__titles">
           <h1 id="content-title" className="title">
-            {type.label}
+            {typeSeo[type.id].name}
           </h1>
           <p className="step__lead">{type.description}</p>
         </div>
@@ -173,6 +175,8 @@ export default function ContentStep({
           </ul>
         </div>
       </aside>
+
+      <FaqList title={`Perguntas sobre ${typeSeo[type.id].name}`} items={typeSeo[type.id].faq} />
     </section>
   );
 }
