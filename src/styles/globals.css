@@ -102,6 +102,25 @@
     @apply border-border outline-ring/50;
   }
 
+  /* Browser autofill paints its own blue box inside our fields, as an !important that can't be
+     overridden. Cover it with an inset shadow of the field's colour instead. It must be
+     !important too, since the field controls carry shadow-none; Tailwind's ring layers are kept
+     after it so a focused standalone input still shows its ring. */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill {
+    -webkit-text-fill-color: var(--color-foreground) !important;
+    caret-color: var(--color-foreground);
+    box-shadow:
+      inset 0 0 0 1000px var(--color-card),
+      var(--tw-ring-offset-shadow, 0 0 #0000),
+      var(--tw-ring-shadow, 0 0 #0000) !important;
+    transition:
+      background-color 9999s ease-out,
+      border-color 200ms ease-out !important;
+  }
+
   html {
     color-scheme: light;
     -webkit-text-size-adjust: 100%;
@@ -290,9 +309,11 @@
     transition: opacity 140ms var(--ease);
   }
 
+  /* Only ever seen on the dark dot, so it never follows the dot's text colour on its way out. */
   .stepper__check {
     width: 14px;
     height: 14px;
+    color: #fff;
     opacity: 0;
     transform: scale(0.4) rotate(-20deg);
   }
@@ -372,6 +393,39 @@
 
   .stepper__item[data-state='done'] .stepper__fill {
     transform: scaleX(1);
+  }
+
+  /* Back from 3 straight to 1, one segment at a time, 200ms each: step 3 goes dark as the
+     2–3 line drains, then step 2 goes dark as the 1–2 line drains, then step 1 lights up. */
+  .stepper[data-direction='back'][data-jump] {
+    --segment: 200ms;
+  }
+
+  .stepper[data-direction='back'][data-jump] .stepper__fill {
+    transition-duration: var(--segment);
+  }
+
+  .stepper[data-direction='back'][data-jump] .stepper__item:nth-child(2) .stepper__fill {
+    transition-delay: 0ms;
+  }
+
+  .stepper[data-direction='back'][data-jump] .stepper__item:nth-child(1) .stepper__fill,
+  .stepper[data-direction='back'][data-jump] .stepper__item:nth-child(2) .stepper__dot,
+  .stepper[data-direction='back'][data-jump] .stepper__item:nth-child(2) .stepper__number,
+  .stepper[data-direction='back'][data-jump] .stepper__item:nth-child(2) .stepper__check {
+    transition-delay: var(--segment);
+  }
+
+  /* Step 2's digit is still hidden when it goes dark: take its grey at once rather than through
+     a delayed colour transition, which Chrome keeps rescheduling and shows late, white on white. */
+  .stepper[data-direction='back'][data-jump] .stepper__item:nth-child(2) .stepper__dot {
+    transition-property: background-color, border-color, box-shadow;
+  }
+
+  .stepper[data-direction='back'][data-jump] .stepper__item[data-state='current'] .stepper__dot,
+  .stepper[data-direction='back'][data-jump] .stepper__item[data-state='current'] .stepper__number,
+  .stepper[data-direction='back'][data-jump] .stepper__item[data-state='current'] .stepper__check {
+    transition-delay: calc(var(--segment) * 2);
   }
 
   .stepper__short {

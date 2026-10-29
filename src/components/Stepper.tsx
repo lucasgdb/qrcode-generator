@@ -25,13 +25,22 @@ export default function Stepper({ step, type, canReach, onStep }: StepperProps) 
   // step lights up; back, the step goes dark before the line drains to the one behind it.
   const [previous, setPrevious] = useState(step);
   const [direction, setDirection] = useState<'forward' | 'back'>('forward');
+  // A jump over a step (3 → 1) plays one segment after the other instead of both at once.
+  const [jump, setJump] = useState(false);
   if (step !== previous) {
     setDirection(step > previous ? 'forward' : 'back');
+    setJump(Math.abs(step - previous) > 1);
     setPrevious(step);
   }
 
   return (
-    <nav className="stepper" data-slot="stepper" data-direction={direction} aria-label="Etapas">
+    <nav
+      className="stepper"
+      data-slot="stepper"
+      data-direction={direction}
+      data-jump={jump || undefined}
+      aria-label="Etapas"
+    >
       <ol>
         {STEPS.map((item, index) => {
           const state = item.id === step ? 'current' : item.id < step ? 'done' : 'todo';
