@@ -2384,11 +2384,6 @@
       flex-wrap: nowrap;
     }
 
-    [data-slot='tabs-list'][data-variant='pill'] [data-slot='tabs-trigger'] {
-      flex: 1;
-      padding: 0 8px;
-    }
-
     .phone__frame {
       height: 520px;
     }

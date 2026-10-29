@@ -224,7 +224,11 @@ export default function DesignStep({ style, onChange, onError, onReset, audit, h
       <Tabs value={tab} onValueChange={(next) => setTab(next as DesignTab)}>
         <TabsList variant="pill" className="max-[760px]:flex-nowrap" aria-label="Personalização">
           {TABS.map((item) => (
-            <TabsTrigger key={item.id} value={item.id} className="max-[760px]:flex-1 max-[760px]:px-2">
+            <TabsTrigger
+              key={item.id}
+              value={item.id}
+              className="max-[760px]:min-w-0 max-[760px]:flex-[1_1_0]! max-[760px]:px-1!"
+            >
               <item.Icon aria-hidden="true" />
               {item.label}
               {item.id === 'logo' && style.logo ? <span className="pill__dot" aria-label="(com logo)" /> : null}
