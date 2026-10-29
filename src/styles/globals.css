@@ -839,10 +839,11 @@
     font-weight: 700;
   }
 
+  /* Drawn bullets, so each dot starts at the title's left edge and centers on the first line. */
   .tips__list {
     margin: 0;
-    padding-left: 18px;
-    list-style: disc;
+    padding: 0;
+    list-style: none;
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -850,8 +851,20 @@
     font-size: 14px;
   }
 
-  .tips__list li::marker {
-    color: var(--color-input);
+  .tips__list li {
+    position: relative;
+    padding-left: 14px;
+  }
+
+  .tips__list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: calc(0.5lh - 2.5px);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-input);
   }
 
   /* Actions ---------------------------------------------------------------- */
@@ -2344,26 +2357,41 @@
       flex-wrap: wrap;
     }
 
-    /* The step's action moves under its title instead of squeezing it. */
+    /* Icon and title share the first row; the lead and the step's action each take a full
+       row below, instead of squeezing into the column beside the icon. */
+    .step__head {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 12px 14px;
+    }
+
     .step__titles {
-      flex-basis: calc(100% - 72px);
+      display: contents;
+    }
+
+    .step__lead {
+      grid-column: 1 / -1;
+      margin: 0;
     }
 
     .step__head > [data-slot='button'] {
-      margin-left: 72px;
+      grid-column: 1 / -1;
+      justify-self: start;
     }
 
-    /* Four tabs fit one row once their icons step aside. */
-    [data-slot='tabs-list'][data-variant='pill'] [data-slot='tabs-trigger'] svg {
-      display: none;
+    .step__icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
     }
 
     .title {
       font-size: 22px;
     }
 
-    .step__head {
-      flex-wrap: wrap;
+    .file-grid {
+      grid-template-columns: minmax(0, 1fr);
     }
 
     .presets {
@@ -2386,6 +2414,17 @@
 
     .phone__frame {
       height: 520px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .tiles--frames {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* Phones: the four tabs fit one row once their icons step aside. Tablets keep them. */
+    [data-slot='tabs-list'][data-variant='pill'] [data-slot='tabs-trigger'] svg {
+      display: none;
     }
   }
 
