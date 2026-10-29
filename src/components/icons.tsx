@@ -43,6 +43,17 @@ export function CopyIcon(props: IconProps) {
   );
 }
 
+export function ShareIcon(props: IconProps) {
+  return (
+    <svg {...ui} {...props}>
+      <circle cx="11.75" cy="3.75" r="1.75" />
+      <circle cx="4.25" cy="8" r="1.75" />
+      <circle cx="11.75" cy="12.25" r="1.75" />
+      <path d="m5.8 7.1 4.4-2.5M5.8 8.9l4.4 2.5" />
+    </svg>
+  );
+}
+
 export function ArrowLeftIcon(props: IconProps) {
   return (
     <svg {...ui} {...props}>

@@ -147,3 +147,13 @@ export async function processLogoFile(file: File): Promise<ProcessedLogo> {
 
   return { dataUrl: canvas.toDataURL('image/png'), name };
 }
+
+/** Whether this browser can hand image files to the system share sheet (WhatsApp, Drive…). */
+export function canShareImages(): boolean {
+  if (typeof navigator === 'undefined' || !navigator.share || !navigator.canShare) return false;
+  try {
+    return navigator.canShare({ files: [new File([new Blob()], 'qrcode.png', { type: 'image/png' })] });
+  } catch {
+    return false;
+  }
+}

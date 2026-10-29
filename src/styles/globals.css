@@ -908,6 +908,11 @@
     margin-left: auto;
   }
 
+  /* After the secondary buttons, the main one sits right beside them, not pushed apart. */
+  .actions__secondary ~ .actions__main {
+    margin-left: 0;
+  }
+
   .actions__secondary + .actions__main {
     margin-left: 0;
   }

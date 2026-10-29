@@ -104,6 +104,8 @@ export function useRoute(initial: Route, onType: (type: QrTypeId) => void) {
       if (step === 3) {
         // Same URL, one more history entry carrying Next's own state plus the design mark.
         window.history.pushState({ ...window.history.state, [DESIGN_MARK]: true }, '', window.location.href);
+        // A reload reopens the content step, so the design step's scroll must not be restored.
+        window.history.scrollRestoration = 'manual';
         show(next);
         return;
       }
@@ -151,6 +153,16 @@ export function useRoute(initial: Route, onType: (type: QrTypeId) => void) {
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, [show]);
+
+  // A reload on the design step lands on the content step (nothing to design yet): drop the
+  // stale mark and start at the top. The entry was pushed with manual scroll restoration.
+  useEffect(() => {
+    if (!isDesignEntry(window.history.state)) return;
+    const state = { ...window.history.state };
+    delete state[DESIGN_MARK];
+    window.history.replaceState(state, '', window.location.href);
+    window.scrollTo({ top: 0 });
+  }, []);
 
   // Old "#/sms" links move to their path once, without animating.
   useEffect(() => {

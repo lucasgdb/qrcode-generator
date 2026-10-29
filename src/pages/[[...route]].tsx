@@ -1,11 +1,11 @@
 import { FileText, Lightbulb } from 'lucide-react';
 import type { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
-import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 
 import ContentStep from '../components/ContentStep';
 import DesignStep from '../components/DesignStep';
-import { ArrowLeftIcon, ArrowRightIcon, CopyIcon, DownloadIcon } from '../components/icons';
+import { ArrowLeftIcon, ArrowRightIcon, CopyIcon, DownloadIcon, ShareIcon } from '../components/icons';
 import MiniPreview from '../components/MiniPreview';
 import PhonePreview from '../components/PhonePreview';
 import QrPreview from '../components/QrPreview';
@@ -20,13 +20,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Tooltip, TooltipContent, TooltipTrigger } from '../components/ui/tooltip';
 import { useQrStudio } from '../hooks/useQrStudio';
 import { routeFromSegments, useRoute, type Route, type Step } from '../hooks/useRoute';
-import { copyPngToClipboard, downloadBlob, rasterizeSvg, toFileName } from '../lib/export';
+import { canShareImages, copyPngToClipboard, downloadBlob, rasterizeSvg, toFileName } from '../lib/export';
 import { buildGeometry, renderQrSvg } from '../lib/qr';
 import { auditQr } from '../lib/scan';
 import { DEFAULT_STYLE, QR_TYPE_BY_ID, QR_TYPES, type ExportFormat, type QrTypeId } from '../lib/types';
 
 const EXTENSION: Record<ExportFormat, string> = { png: 'png', svg: 'svg', jpeg: 'jpg' };
 const SIZES = [512, 1024, 2048, 4096];
+
+/** Browser capabilities that never change while the page is open. */
+const subscribeNever = () => () => {};
 
 interface HomeProps {
   /** The step and type this URL opens on, known at build time so the HTML is already on the right step. */
@@ -39,6 +42,10 @@ export default function Home({ route }: HomeProps) {
   const [toast, setToast] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [copying, setCopying] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  // Known only in the browser; the button appears after hydration where the share sheet takes files.
+  const shareable = useSyncExternalStore(subscribeNever, canShareImages, () => false);
+  const sharedFile = useRef<{ key: string; file: File } | null>(null);
   const toastTimer = useRef<number | null>(null);
   const artRef = useRef<HTMLDivElement>(null);
   const actionsEndRef = useRef<HTMLDivElement>(null);
@@ -145,6 +152,39 @@ export default function Home({ route }: HomeProps) {
       setCopying(false);
     }
   }, [exportPrefs.size, renderExport, showToast, style.bg]);
+
+  // Opens the system share sheet with the code as an image (PNG, or JPEG when that is the
+  // chosen format; SVG doesn't preview in chat apps). Safari wants share() close to the tap,
+  // so if the drawing took too long the file is kept and the next tap shares it at once.
+  const handleShare = useCallback(async () => {
+    const rendered = renderExport();
+    if (!rendered || sharing) return;
+
+    const jpeg = exportPrefs.format === 'jpeg';
+    const filename = `${toFileName(exportPrefs.filename, `qr-code-${typeDef.id}`)}.${jpeg ? 'jpg' : 'png'}`;
+    const key = `${filename}|${exportPrefs.size}|${style.bg}|${rendered.svg}`;
+
+    setSharing(true);
+    try {
+      if (sharedFile.current?.key !== key) {
+        const mime = jpeg ? 'image/jpeg' : 'image/png';
+        const height = Math.round(exportPrefs.size * rendered.aspect);
+        const blob = await rasterizeSvg(rendered.svg, exportPrefs.size, height, mime, style.bg);
+        sharedFile.current = { key, file: new File([blob], filename, { type: mime }) };
+      }
+      await navigator.share({ files: [sharedFile.current.file], title: `QR Code de ${typeDef.label}` });
+    } catch (error) {
+      const name = error instanceof DOMException ? error.name : '';
+      if (name === 'AbortError') return;
+      showToast(
+        name === 'NotAllowedError'
+          ? 'Imagem pronta. Toque em Compartilhar de novo.'
+          : 'Não foi possível compartilhar. Use Baixar para salvar o arquivo.',
+      );
+    } finally {
+      setSharing(false);
+    }
+  }, [exportPrefs, renderExport, sharing, showToast, style.bg, typeDef.id, typeDef.label]);
 
   const handleCopyPayload = useCallback(async () => {
     try {
@@ -392,6 +432,24 @@ export default function Home({ route }: HomeProps) {
                         </TooltipTrigger>
                         <TooltipContent>Copiar como imagem</TooltipContent>
                       </Tooltip>
+                      {shareable ? (
+                        <Tooltip>
+                          <TooltipTrigger
+                            render={
+                              <Button
+                                variant="outline"
+                                size="icon-xl"
+                                onClick={handleShare}
+                                disabled={!canDownload || sharing}
+                                aria-label="Compartilhar imagem"
+                              />
+                            }
+                          >
+                            <ShareIcon />
+                          </TooltipTrigger>
+                          <TooltipContent>Compartilhar imagem</TooltipContent>
+                        </Tooltip>
+                      ) : null}
                       <Tooltip>
                         <TooltipTrigger
                           render={
