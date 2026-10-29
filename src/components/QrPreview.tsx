@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type Ref } from 'react';
 import { minPrintCentimeters, type MatrixResult, type QrGeometry } from '../lib/qr';
 import { formatDecimal, formatRatio, type ScanAudit } from '../lib/scan';
 import { Button } from './ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
 
 export interface QrPreviewProps {
   svg: string | null;
@@ -94,13 +95,15 @@ export default function QrPreview({
             </div>
           </dl>
 
-          <details className="payload">
-            <summary>Ver conteúdo codificado</summary>
-            <pre>{payload}</pre>
-            <Button variant="link" onClick={copy}>
-              {copied ? 'Copiado' : 'Copiar conteúdo'}
-            </Button>
-          </details>
+          <Collapsible className="payload">
+            <CollapsibleTrigger className="payload__toggle">Ver conteúdo codificado</CollapsibleTrigger>
+            <CollapsibleContent className="payload__body">
+              <pre>{payload}</pre>
+              <Button variant="link" onClick={copy}>
+                {copied ? 'Copiado' : 'Copiar conteúdo'}
+              </Button>
+            </CollapsibleContent>
+          </Collapsible>
         </figcaption>
       ) : null}
     </figure>

@@ -1540,23 +1540,32 @@
   }
 
   .payload {
+    display: flex;
+    flex-direction: column;
     font-size: 14px;
   }
 
-  .payload summary {
-    width: max-content;
-    margin: 0 auto;
+  .payload__toggle {
+    align-self: center;
+    padding: 4px 8px;
     color: var(--color-muted-foreground);
     font-weight: 600;
     cursor: pointer;
+    transition: color var(--duration) var(--ease);
   }
 
-  .payload summary:hover {
+  .payload__toggle:hover,
+  .payload__toggle[data-panel-open] {
     color: var(--color-foreground);
   }
 
+  .payload__body {
+    text-align: center;
+  }
+
   .payload pre {
-    margin: 12px 0 8px;
+    margin: 8px 0;
+    text-align: left;
     padding: 12px 14px;
     max-height: 160px;
     overflow: auto;
