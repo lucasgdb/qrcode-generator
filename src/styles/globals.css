@@ -1144,12 +1144,13 @@
   }
 
   /* Design step ------------------------------------------------------------ */
+  /* Follows the tab's text, so it stays visible on the dark active tab too. */
   .pill__dot {
     width: 7px;
     height: 7px;
     margin-left: 2px;
     border-radius: 50%;
-    background: var(--color-primary);
+    background: currentColor;
   }
 
   .tiles {
