@@ -954,10 +954,25 @@
     margin-top: -16px;
   }
 
+  /* It shrinks with the row, and once its label no longer fits it keeps only the icon. The label
+     stays in the accessibility tree, visually hidden, so the button keeps its name. */
   .actions__main {
     flex: 1;
+    min-width: 0;
     max-width: 380px;
     margin-left: auto;
+    container-type: inline-size;
+  }
+
+  @container (max-width: 124px) {
+    .actions__label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
   }
 
   .actions__secondary {

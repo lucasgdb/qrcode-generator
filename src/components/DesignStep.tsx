@@ -145,7 +145,7 @@ function ColorField({
 // On phones the four pills join into one segmented bar: equal parts, hairline dividers,
 // and the outer track's radius clipping the ends of the first and last part.
 const MOBILE_SEGMENTED_LIST =
-  'max-[760px]:w-full max-[760px]:flex-nowrap max-[760px]:gap-0! max-[760px]:overflow-hidden max-[760px]:rounded-full max-[760px]:border max-[760px]:border-input max-[760px]:bg-card';
+  'max-[760px]:w-full max-[760px]:flex-nowrap max-[760px]:gap-0! max-[760px]:overflow-hidden max-[760px]:rounded-(--radius-field) max-[760px]:border max-[760px]:border-input max-[760px]:bg-card';
 const MOBILE_SEGMENTED_TRIGGER =
   'max-[760px]:h-10! max-[760px]:min-w-0 max-[760px]:flex-1! max-[760px]:rounded-none! max-[760px]:border-0! max-[760px]:border-l! max-[760px]:border-input! max-[760px]:px-2! max-[760px]:text-[13px]! max-[760px]:first:border-l-0! max-[760px]:focus-visible:ring-inset';
 

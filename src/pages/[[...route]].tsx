@@ -426,7 +426,7 @@ export default function Home({ route }: HomeProps) {
 
                   {step === 2 ? (
                     <Button size="xl" className="actions__main" onClick={handleNext}>
-                      Avançar
+                      <span className="actions__label">Avançar</span>
                       <ArrowRightIcon />
                     </Button>
                   ) : (
@@ -481,11 +481,13 @@ export default function Home({ route }: HomeProps) {
                           }
                         >
                           {done === 'download' ? <CheckIcon /> : <DownloadIcon />}
-                          {downloading
-                            ? 'Gerando…'
-                            : done === 'download'
-                              ? 'Baixado'
-                              : `Baixar ${exportPrefs.format.toUpperCase()}`}
+                          <span className="actions__label">
+                            {downloading
+                              ? 'Gerando…'
+                              : done === 'download'
+                                ? 'Baixado'
+                                : `Baixar ${exportPrefs.format.toUpperCase()}`}
+                          </span>
                         </TooltipTrigger>
                         <TooltipContent>Atalho: Ctrl+S</TooltipContent>
                       </Tooltip>
