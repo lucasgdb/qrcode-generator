@@ -5,7 +5,7 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, us
 
 import ContentStep from '../components/ContentStep';
 import DesignStep from '../components/DesignStep';
-import { ArrowLeftIcon, ArrowRightIcon, CopyIcon, DownloadIcon, ShareIcon } from '../components/icons';
+import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, CopyIcon, DownloadIcon, ShareIcon } from '../components/icons';
 import MiniPreview from '../components/MiniPreview';
 import PhonePreview from '../components/PhonePreview';
 import QrPreview from '../components/QrPreview';
@@ -47,6 +47,10 @@ export default function Home({ route }: HomeProps) {
   const shareable = useSyncExternalStore(subscribeNever, canShareImages, () => false);
   const sharedFile = useRef<{ key: string; file: File } | null>(null);
   const toastTimer = useRef<number | null>(null);
+  // Success shows on the button that did it (a check for a moment), not in a toast over the bar.
+  const [done, setDone] = useState<'copy' | 'download' | null>(null);
+  const [announcement, setAnnouncement] = useState('');
+  const doneTimer = useRef<number | null>(null);
   const artRef = useRef<HTMLDivElement>(null);
   const actionsEndRef = useRef<HTMLDivElement>(null);
   const [actionsFloating, setActionsFloating] = useState(false);
@@ -72,9 +76,20 @@ export default function Home({ route }: HomeProps) {
     toastTimer.current = window.setTimeout(() => setToast(null), 2800);
   }, []);
 
+  const confirm = useCallback((kind: 'copy' | 'download', message: string) => {
+    setDone(kind);
+    setAnnouncement(message);
+    if (doneTimer.current) window.clearTimeout(doneTimer.current);
+    doneTimer.current = window.setTimeout(() => {
+      setDone(null);
+      setAnnouncement('');
+    }, 1800);
+  }, []);
+
   useEffect(() => {
     return () => {
       if (toastTimer.current) window.clearTimeout(toastTimer.current);
+      if (doneTimer.current) window.clearTimeout(doneTimer.current);
     };
   }, []);
 
@@ -128,13 +143,13 @@ export default function Home({ route }: HomeProps) {
         downloadBlob(await rasterizeSvg(rendered.svg, exportPrefs.size, height, mime, style.bg), filename);
       }
 
-      showToast(`Baixado: ${filename}`);
+      confirm('download', `Baixado: ${filename}`);
     } catch {
       showToast('Não foi possível gerar o arquivo. Tente novamente.');
     } finally {
       setDownloading(false);
     }
-  }, [downloading, exportPrefs, renderExport, showToast, style.bg, typeDef.id]);
+  }, [confirm, downloading, exportPrefs, renderExport, showToast, style.bg, typeDef.id]);
 
   const handleCopyImage = useCallback(async () => {
     const rendered = renderExport();
@@ -145,13 +160,14 @@ export default function Home({ route }: HomeProps) {
       const height = Math.round(exportPrefs.size * rendered.aspect);
       const blob = await rasterizeSvg(rendered.svg, exportPrefs.size, height, 'image/png', style.bg);
       const copied = await copyPngToClipboard(blob);
-      showToast(copied ? 'Imagem copiada. Cole onde quiser.' : 'Seu navegador não liberou a cópia. Use Baixar.');
+      if (copied) confirm('copy', 'Imagem copiada. Cole onde quiser.');
+      else showToast('Seu navegador não liberou a cópia. Use Baixar.');
     } catch {
       showToast('Não foi possível copiar a imagem. Use Baixar para salvar o arquivo.');
     } finally {
       setCopying(false);
     }
-  }, [exportPrefs.size, renderExport, showToast, style.bg]);
+  }, [confirm, exportPrefs.size, renderExport, showToast, style.bg]);
 
   // Opens the system share sheet with the code as an image (PNG, or JPEG when that is the
   // chosen format; SVG doesn't preview in chat apps). Safari wants share() close to the tap,
@@ -424,13 +440,14 @@ export default function Home({ route }: HomeProps) {
                               className="actions__secondary"
                               onClick={handleCopyImage}
                               disabled={!canDownload || copying}
-                              aria-label="Copiar como imagem"
+                              aria-label={done === 'copy' ? 'Imagem copiada' : 'Copiar como imagem'}
+                              data-done={done === 'copy' || undefined}
                             />
                           }
                         >
-                          <CopyIcon />
+                          {done === 'copy' ? <CheckIcon /> : <CopyIcon />}
                         </TooltipTrigger>
-                        <TooltipContent>Copiar como imagem</TooltipContent>
+                        <TooltipContent>{done === 'copy' ? 'Copiada!' : 'Copiar como imagem'}</TooltipContent>
                       </Tooltip>
                       {shareable ? (
                         <Tooltip>
@@ -459,11 +476,16 @@ export default function Home({ route }: HomeProps) {
                               onClick={handleDownload}
                               disabled={!canDownload || downloading}
                               aria-keyshortcuts="Control+S Meta+S"
+                              data-done={done === 'download' || undefined}
                             />
                           }
                         >
-                          <DownloadIcon />
-                          {downloading ? 'Gerando…' : `Baixar ${exportPrefs.format.toUpperCase()}`}
+                          {done === 'download' ? <CheckIcon /> : <DownloadIcon />}
+                          {downloading
+                            ? 'Gerando…'
+                            : done === 'download'
+                              ? 'Baixado'
+                              : `Baixar ${exportPrefs.format.toUpperCase()}`}
                         </TooltipTrigger>
                         <TooltipContent>Atalho: Ctrl+S</TooltipContent>
                       </Tooltip>
@@ -499,6 +521,10 @@ export default function Home({ route }: HomeProps) {
       </div>
 
       {studio.hydrated && step === 3 ? <MiniPreview target={artRef} svg={preview?.svg ?? null} /> : null}
+
+      <span className="sr-only" role="status" aria-live="polite">
+        {announcement}
+      </span>
 
       <div className="toast-region" role="status" aria-live="polite">
         {toast ? (

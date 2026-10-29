@@ -55,6 +55,8 @@
   --duration: 200ms;
   --duration-panel: 260ms;
   --masthead-height: 68px;
+  /* Action bar height (52px button, padding, edge) plus a 12px gap. */
+  --actions-clearance: 97px;
   --main-gap: 48px;
 }
 
@@ -909,6 +911,22 @@
   }
 
   /* After the secondary buttons, the main one sits right beside them, not pushed apart. */
+  /* A brief check on the button that just copied or downloaded. */
+  .actions [data-done] svg {
+    animation: pop 220ms var(--ease) both;
+  }
+
+  .actions__secondary[data-done] {
+    color: var(--positive);
+  }
+
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+  }
+
   .actions__secondary ~ .actions__main {
     margin-left: 0;
   }
@@ -2172,6 +2190,11 @@
     max-width: calc(100vw - 32px);
   }
 
+  /* Steps 2 and 3 end on the action bar: the toast rises above it instead of covering it. */
+  .app:not([data-step='1']) ~ .toast-region {
+    bottom: calc(var(--actions-clearance) + env(safe-area-inset-bottom));
+  }
+
   .toast {
     display: flex;
     align-items: center;
@@ -2215,6 +2238,11 @@
 
   /* Tablet and phone ------------------------------------------------------- */
   @media (max-width: 1023px) {
+    :root {
+      /* The fixed bar: 12px padding around the 52px button, plus its top edge and a 12px gap. */
+      --actions-clearance: 89px;
+    }
+
     .workspace {
       grid-template-columns: minmax(0, 1fr);
       gap: 32px;
