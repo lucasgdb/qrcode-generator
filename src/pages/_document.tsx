@@ -11,7 +11,6 @@ export default function Document() {
   return (
     <Html lang="pt-BR">
       <Head>
-        <link rel="preload" href="/fonts/geist-variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         {/* Site-wide tags, rendered on the server only (they never change between steps). */}
         <meta name="robots" content={robots} />
         <meta name="googlebot" content={robots} />

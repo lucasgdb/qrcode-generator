@@ -19,6 +19,19 @@ const nextConfig = {
     '/og': ['./src/assets/fonts/**'],
     '/og/[type]': ['./src/assets/fonts/**'],
   },
+  // Icons and the manifest keep their names across deploys, so they can't be immutable: a day
+  // fresh, then served from cache while revalidating for a week. Hashed /_next/static files
+  // (scripts, CSS, the font) are already cached for a year; robots and sitemap stay short.
+  async headers() {
+    const icons = 'public, max-age=86400, stale-while-revalidate=604800';
+    return [
+      '/favicon.svg',
+      '/icon-:size.png',
+      '/icon-maskable-512.png',
+      '/apple-touch-icon.png',
+      '/manifest.webmanifest',
+    ].map((source) => ({ source, headers: [{ key: 'Cache-Control', value: icons }] }));
+  },
 };
 
 module.exports = nextConfig;
