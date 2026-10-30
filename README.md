@@ -2,6 +2,14 @@
 
 Uma bancada para criar, personalizar e conferir QR Codes no navegador. O código é gerado no cliente, sem enviar conteúdo para nenhum servidor, e sai em PNG, SVG ou JPEG.
 
+![Etapa 1: escolha entre 13 tipos de QR Code](docs/screenshots/1-tipo.png)
+
+| Etapa 2: conteúdo, com a prévia no celular                             | Etapa 3: moldura, cores, formato e logo                                      |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| ![Etapa 2 com um QR Code de WhatsApp](docs/screenshots/2-conteudo.png) | ![Etapa 3 com a moldura Balão em verde](docs/screenshots/3-personalizar.png) |
+
+![As três etapas no celular](docs/screenshots/celular.png)
+
 ## O que dá para criar
 
 - **Link** para uma página, **redes sociais** (Instagram, TikTok, YouTube, X, LinkedIn, Facebook, Threads, GitHub), **vídeo** (links do YouTube viram youtu.be, mais curtos), **texto** livre, **Wi-Fi**, **contato (vCard)**, **PIX** (BR Code estático com CRC16), **e-mail**, **SMS**, **WhatsApp**, **telefone**, **localização** e **evento** de calendário.
@@ -24,7 +32,7 @@ Uma bancada para criar, personalizar e conferir QR Codes no navegador. O código
 - Tailwind CSS 4
 - Design system com [shadcn/ui](https://ui.shadcn.com) sobre [Base UI](https://base-ui.com) em `src/components/ui` (botão, input, textarea, select, checkbox, abas, toggle group, slider, tooltip, badge, label); os tokens ficam em `globals.css` com os nomes do shadcn (`--primary`, `--border`, `--muted-foreground`…)
 - [`qrcode-generator`](https://www.npmjs.com/package/qrcode-generator) para a matriz do QR e um renderizador SVG próprio para módulos, olhos e logo
-- Geist servida localmente em `public/fonts` (licença SIL OFL em `public/fonts/OFL.txt`)
+- Geist recortada para o alfabeto latino e servida pelo `next/font/local` em `src/assets/fonts` (licença SIL OFL em `src/assets/fonts/OFL.txt`)
 
 ## Design
 
@@ -67,7 +75,7 @@ src/
     scan.ts       contraste e auditoria de leitura
     export.ts     PNG/JPEG, download, clipboard e logo
     types.ts      tipos de conteúdo, campos e presets
-  pages/          Next.js (index, _app, _document)
+  pages/          Next.js ([[...route]], _app, _document)
   styles/         tokens, componentes e responsivo
 ```
 

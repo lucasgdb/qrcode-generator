@@ -38,3 +38,6 @@ next-env.d.ts
 # local work files
 .tmp/
 .taste-skill/
+
+# before/after comparisons, kept out of the repository
+/docs/antes-e-depois/
