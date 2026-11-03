@@ -2,6 +2,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { AppProps } from 'next/app';
 import localFont from 'next/font/local';
+import Head from 'next/head';
 
 import { TooltipProvider } from '../components/ui/tooltip';
 
@@ -20,11 +21,10 @@ const geist = localFont({
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <TooltipProvider delay={400}>
-      <style jsx global>{`
-        :root {
-          --font-geist: ${geist.style.fontFamily};
-        }
-      `}</style>
+      <Head>
+        {/* The font's generated family, for --font-sans in globals.css. */}
+        <style key="font-geist" dangerouslySetInnerHTML={{ __html: `:root{--font-geist:${geist.style.fontFamily}}` }} />
+      </Head>
       <Component {...pageProps} />
       {/* Referrers (AI assistants included) and real-user Core Web Vitals; see docs/SEO.md. */}
       <Analytics />

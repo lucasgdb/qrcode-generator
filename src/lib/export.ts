@@ -98,7 +98,8 @@ export function isSafeImageDataUrl(value: unknown): value is string {
 function readAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
+    reader.onload = () =>
+      typeof reader.result === 'string' ? resolve(reader.result) : reject(new Error('Não foi possível ler o arquivo.'));
     reader.onerror = () => reject(new Error('Não foi possível ler o arquivo.'));
     reader.readAsDataURL(file);
   });

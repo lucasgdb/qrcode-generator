@@ -185,7 +185,7 @@ export function useQrStudio(initialType: QrTypeId = 'link') {
       ...previous,
       values: {
         ...previous.values,
-        [previous.type]: { ...(previous.values[previous.type] ?? {}), [key]: value },
+        [previous.type]: { ...previous.values[previous.type], [key]: value },
       },
     }));
   }, []);

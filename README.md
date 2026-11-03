@@ -28,7 +28,8 @@ Uma bancada para criar, personalizar e conferir QR Codes no navegador. O código
 ## Stack
 
 - Next.js 16 (Pages Router) e React 19
-- TypeScript 5.9
+- TypeScript 7 (`tsc` nativo; o `next build` também confere os tipos por ele)
+- [Oxlint](https://oxc.rs) com regras do Next, React (hooks), jsx-a11y e análise com tipos via `oxlint-tsgolint`, configurado em `.oxlintrc.json`
 - Tailwind CSS 4
 - Design system com [shadcn/ui](https://ui.shadcn.com) sobre [Base UI](https://base-ui.com) em `src/components/ui` (botão, input, textarea, select, checkbox, abas, toggle group, slider, tooltip, badge, label); os tokens ficam em `globals.css` com os nomes do shadcn (`--primary`, `--border`, `--muted-foreground`…)
 - [`qrcode-generator`](https://www.npmjs.com/package/qrcode-generator) para a matriz do QR e um renderizador SVG próprio para módulos, olhos e logo
@@ -46,7 +47,7 @@ O topo mostra só as etapas, centralizadas, com a linha de progresso preenchendo
 
 ## Rodando o projeto
 
-Requer Node.js 20.9 ou superior e [pnpm](https://pnpm.io) (a versão está fixada em `packageManager` no `package.json`).
+Requer Node.js 26 ou superior (`.nvmrc`) e [pnpm](https://pnpm.io) (a versão está fixada em `packageManager` no `package.json`).
 
 ```bash
 pnpm install
@@ -57,7 +58,7 @@ Abra [http://localhost:3000](http://localhost:3000).
 
 ```bash
 pnpm build && pnpm start   # build de produção
-pnpm lint                  # ESLint
+pnpm lint                  # Oxlint
 pnpm typecheck             # TypeScript
 pnpm format                # Prettier
 ```

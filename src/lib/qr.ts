@@ -24,12 +24,10 @@ export function generateMatrix(payload: string, errorCorrection: ErrorCorrection
     qr.make();
 
     const count = qr.getModuleCount();
-    const modules: boolean[] = new Array(count * count);
-    for (let row = 0; row < count; row += 1) {
-      for (let column = 0; column < count; column += 1) {
-        modules[row * count + column] = qr.isDark(row, column);
-      }
-    }
+    // Row-major: module i sits at row i / count, column i % count.
+    const modules = Array.from({ length: count * count }, (_, index) =>
+      qr.isDark(Math.floor(index / count), index % count),
+    );
 
     return { ok: true, matrix: { count, version: (count - 17) / 4, modules } };
   } catch {
