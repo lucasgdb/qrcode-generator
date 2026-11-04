@@ -1,15 +1,17 @@
 import { ArrowLeftRight, CircleCheck, CircleDashed, FileText, Lightbulb, Sparkles } from 'lucide-react';
-import { useId, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 
 import FaqList from './FaqList';
 import FieldControl from './FieldControl';
-import { TypeIcon } from './icons';
+import { CheckIcon, CopyIcon, TypeIcon } from './icons';
+import Perks from './Perks';
+import { RelatedTypes, TypeGuide } from './TypeGuide';
 import { TYPE_HUE } from '../lib/type-hue';
 import { Button } from './ui/button';
 import { FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet } from './ui/field';
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from './ui/input-group';
 import { typeSeo } from '../lib/seo-content';
-import { socialPrefix, type FieldDef, type QrTypeDef } from '../lib/types';
+import { socialPrefix, type FieldDef, type QrTypeDef, type QrTypeId } from '../lib/types';
 
 export interface ContentStepProps {
   type: QrTypeDef;
@@ -17,6 +19,12 @@ export interface ContentStepProps {
   onValueChange(key: string, value: string): void;
   onExample(): void;
   onChangeType(): void;
+  /** Switches to another type from the "Outros tipos" links. */
+  onPickType(type: QrTypeId): void;
+  /** What the code holds right now; shown as a copyable link where the link is useful by itself. */
+  payload: string;
+  /** Copies the payload; resolves to false when the browser refused. */
+  onCopyPayload(): Promise<boolean>;
   name: string;
   onNameChange(name: string): void;
   /** Extension of the chosen export format, shown after the file name ("png", "svg"…). */
@@ -40,6 +48,9 @@ export default function ContentStep({
   onValueChange,
   onExample,
   onChangeType,
+  onPickType,
+  payload,
+  onCopyPayload,
   name,
   onNameChange,
   extension,
@@ -91,9 +102,10 @@ export default function ContentStep({
         </span>
         <div className="step__titles">
           <h1 id="content-title" className="title">
-            {typeSeo[type.id].name}
+            Gerador de {typeSeo[type.id].name}
           </h1>
           <p className="step__lead">{type.description}</p>
+          <Perks compact />
         </div>
         <Button variant="outline" size="lg" className="rounded-full" onClick={onChangeType}>
           <ArrowLeftRight aria-hidden="true" />
@@ -115,6 +127,10 @@ export default function ContentStep({
           </div>
           <FieldGroup className="fields">{fields}</FieldGroup>
         </FieldSet>
+
+        {type.id === 'whatsapp' && payload ? (
+          <DirectLink label="Link do WhatsApp" url={payload} onCopy={onCopyPayload} />
+        ) : null}
 
         {required.length > 0 ? (
           <p className="form-status" data-complete={complete || undefined} aria-live="polite">
@@ -176,7 +192,51 @@ export default function ContentStep({
         </div>
       </aside>
 
+      <TypeGuide type={type.id} />
+
       <FaqList title={`Perguntas sobre ${typeSeo[type.id].name}`} items={typeSeo[type.id].faq} />
+
+      <RelatedTypes type={type.id} onSelect={onPickType} />
     </section>
+  );
+}
+
+interface DirectLinkProps {
+  label: string;
+  url: string;
+  onCopy(): Promise<boolean>;
+}
+
+/** The link the code opens, to paste in a bio, a site or an ad without the QR Code. */
+function DirectLink({ label, url, onCopy }: DirectLinkProps) {
+  const [copied, setCopied] = useState(false);
+  const timer = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timer.current) window.clearTimeout(timer.current);
+    };
+  }, []);
+
+  async function copy() {
+    if (!(await onCopy())) return;
+    setCopied(true);
+    if (timer.current) window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => setCopied(false), 1800);
+  }
+
+  return (
+    <div className="direct-link" data-slot="direct-link">
+      <div className="direct-link__body">
+        <span className="direct-link__label">{label}</span>
+        <a className="direct-link__url" href={url} target="_blank" rel="noopener" translate="no">
+          {url}
+        </a>
+      </div>
+      <Button variant="outline" size="lg" className="rounded-full" onClick={copy} aria-live="polite">
+        {copied ? <CheckIcon /> : <CopyIcon />}
+        {copied ? 'Copiado' : 'Copiar link'}
+      </Button>
+    </div>
   );
 }

@@ -17,6 +17,14 @@ export function pageUrl(type: QrTypeId | null = null) {
   return type ? `${baseUrl}/${type}` : baseUrl;
 }
 
+/** The privacy page, linked from every page's footer. */
+export const privacyPath = '/privacidade';
+
+/** An anchor id on a page; the home page keeps the "/" before "#" so every id reads alike. */
+function nodeId(url: string, fragment: string) {
+  return url === baseUrl ? `${baseUrl}/#${fragment}` : `${url}#${fragment}`;
+}
+
 export const ogImageSize = { width: 1200, height: 630 };
 
 export function ogImageUrl(type: QrTypeId | null = null) {
@@ -46,7 +54,9 @@ export function pageSeo(type: QrTypeId | null): PageSeo {
   }
   const seo = typeSeo[type];
   return {
-    title: `${seo.title} | ${site.name}`,
+    // "Gerador de QR Code PIX grátis | Gerador de QR" says "Gerador" twice; the brand goes
+    // only on titles that don't already carry it.
+    title: /gerador/i.test(seo.title) ? seo.title : `${seo.title} | ${site.name}`,
     description: seo.description,
     url: pageUrl(type),
     image: ogImageUrl(type),
@@ -92,7 +102,9 @@ function appJsonLd() {
   return {
     '@type': 'WebApplication',
     '@id': appId,
-    name: site.title,
+    // The same name as the WebSite, so answer engines see one product, not two.
+    name: site.name,
+    alternateName: site.title,
     url: baseUrl,
     description: homeSeo.description,
     applicationCategory: 'UtilitiesApplication',
@@ -111,6 +123,7 @@ function appJsonLd() {
     image: ogImageUrl(),
     author: { '@id': authorId },
     isPartOf: { '@id': websiteId },
+    sameAs: [site.sourceCode],
     dateModified: contentUpdatedAt,
   };
 }
@@ -118,7 +131,7 @@ function appJsonLd() {
 function faqJsonLd(url: string, faq: Faq[]) {
   return {
     '@type': 'FAQPage',
-    '@id': `${url}#faq`,
+    '@id': nodeId(url, 'faq'),
     mainEntity: faq.map((item) => ({
       '@type': 'Question',
       name: item.question,
@@ -134,7 +147,7 @@ export function homeJsonLd() {
     '@graph': [
       {
         '@type': 'WebPage',
-        '@id': `${url}/#webpage`,
+        '@id': nodeId(url, 'webpage'),
         url,
         name: homeSeo.title,
         description: homeSeo.description,
@@ -207,7 +220,11 @@ export function buildSitemap(): MetadataRoute.Sitemap {
     alternates: { languages: { [site.language]: pageUrl(type), 'x-default': pageUrl(type) } },
     images: [ogImageUrl(type)],
   });
-  return [entry(null), ...QR_TYPES.map((type) => entry(type.id))];
+  return [
+    entry(null),
+    ...QR_TYPES.map((type) => entry(type.id)),
+    { url: `${baseUrl}${privacyPath}`, lastModified: contentUpdatedAt },
+  ];
 }
 
 // Training crawlers. Search crawlers (Googlebot, OAI-SearchBot, ...) use "*".
@@ -224,7 +241,6 @@ export function buildRobots(vercelEnv?: string, allowTraining = allowAiTraining)
       allowTraining ? { userAgent: aiTrainingCrawlers, allow: '/' } : { userAgent: aiTrainingCrawlers, disallow: '/' },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
-    host: baseUrl,
   };
 }
 
@@ -256,6 +272,10 @@ ${typeLinks}
 ## Perguntas frequentes
 
 ${answers}
+
+## Sobre
+
+Feito por ${author.name} (${author.url}). O código-fonte é aberto: ${site.sourceCode}. Política de privacidade: ${baseUrl}${privacyPath}. Conteúdo atualizado em ${contentUpdatedAt}.
 
 ## Optional
 

@@ -271,7 +271,7 @@ export const QR_TYPES: QrTypeDef[] = [
       {
         key: 'key',
         label: 'Chave PIX',
-        placeholder: 'CPF, e-mail, telefone ou chave aleatória…',
+        placeholder: 'CPF, e-mail ou celular…',
         hint: 'E-mail, telefone, CPF/CNPJ ou chave aleatória.',
         required: true,
         autoComplete: 'off',

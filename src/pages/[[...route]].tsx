@@ -1,16 +1,15 @@
 import { FileText, Lightbulb } from 'lucide-react';
 import type { GetStaticPaths, GetStaticProps } from 'next';
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 
 import ContentStep from '../components/ContentStep';
-import DesignStep from '../components/DesignStep';
 import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, CopyIcon, DownloadIcon, ShareIcon } from '../components/icons';
-import MiniPreview from '../components/MiniPreview';
 import PhonePreview from '../components/PhonePreview';
-import QrPreview from '../components/QrPreview';
 import SegmentedControl from '../components/SegmentedControl';
 import Seo from '../components/Seo';
+import SiteFooter from '../components/SiteFooter';
 import Stepper from '../components/Stepper';
 import TypePicker from '../components/TypePicker';
 import { TYPE_HUE } from '../lib/type-hue';
@@ -24,6 +23,14 @@ import { canShareImages, copyPngToClipboard, downloadBlob, rasterizeSvg, toFileN
 import { buildGeometry, renderQrSvg } from '../lib/qr';
 import { auditQr } from '../lib/scan';
 import { DEFAULT_STYLE, QR_TYPE_BY_ID, QR_TYPES, type ExportFormat, type QrTypeId } from '../lib/types';
+
+// The design step only exists after the content step (it has no URL and is never rendered on
+// the server), so its code loads on the way there instead of with the first page.
+const loadDesignStep = () => import('../components/DesignStep');
+const loadQrPreview = () => import('../components/QrPreview');
+const DesignStep = dynamic(loadDesignStep);
+const QrPreview = dynamic(loadQrPreview);
+const MiniPreview = dynamic(() => import('../components/MiniPreview'), { ssr: false });
 
 const EXTENSION: Record<ExportFormat, string> = { png: 'png', svg: 'svg', jpeg: 'jpg' };
 const SIZES = [512, 1024, 2048, 4096];
@@ -267,6 +274,13 @@ export default function Home({ route }: HomeProps) {
     });
   }, [goTo, showToast, studio.hasContent, studio.matrix, typeDef.emptyHint]);
 
+  // On the content step, fetch the design step's code while the person types.
+  useEffect(() => {
+    if (step !== 2) return;
+    void loadDesignStep();
+    void loadQrPreview();
+  }, [step]);
+
   // Ctrl/Cmd+S downloads the code instead of saving the page.
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -315,6 +329,9 @@ export default function Home({ route }: HomeProps) {
                     onValueChange={studio.setValue}
                     onExample={studio.applyExample}
                     onChangeType={() => goTo(1)}
+                    onPickType={handlePickType}
+                    payload={studio.payload}
+                    onCopyPayload={handleCopyPayload}
                     name={exportPrefs.filename}
                     onNameChange={(filename) => studio.patchExport({ filename })}
                     extension={EXTENSION[exportPrefs.format]}
@@ -520,6 +537,7 @@ export default function Home({ route }: HomeProps) {
             </div>
           )}
         </main>
+        <SiteFooter />
       </div>
 
       {studio.hydrated && step === 3 ? <MiniPreview target={artRef} svg={preview?.svg ?? null} /> : null}

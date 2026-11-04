@@ -25,7 +25,7 @@ export const author = {
 };
 
 /** Bump when the page copy, FAQ or type list changes; feeds the sitemap `lastmod` and `dateModified`. */
-export const contentUpdatedAt = '2026-10-28';
+export const contentUpdatedAt = '2026-11-04';
 
 // AI training crawlers (GPTBot, Google-Extended, ...). See docs/SEO.md.
 export const allowAiTraining = true;

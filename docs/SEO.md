@@ -9,7 +9,7 @@ Nada disso garante posição, resultados ricos ou citações em IA. Remove obst�
 | O quê                                                                                            | Arquivo                                        |
 | ------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
 | Domínio, nome, autor, política de treino de IA, data do conteúdo                                 | `src/lib/site.ts` (fonte única)                |
-| Títulos, descrições, FAQs e passos de cada tipo                                                  | `src/lib/seo-content.ts`                       |
+| Títulos, descrições, FAQs, guia, fontes e tipos relacionados de cada tipo                        | `src/lib/seo-content.ts`                       |
 | JSON-LD, sitemap, robots e llms.txt                                                              | `src/lib/seo.ts`                               |
 | Tags por página (title, canonical, hreflang, Open Graph, Twitter, JSON-LD)                       | `src/components/Seo.tsx`                       |
 | Tags do site todo (robots, verificação, ícones, manifest)                                        | `src/pages/_document.tsx`                      |
@@ -26,22 +26,28 @@ Ao mudar textos, FAQs ou a lista de tipos, atualize `contentUpdatedAt` em `src/l
 O domínio é resolvido no `next.config.js` e embutido no build, para servidor e navegador usarem o mesmo valor:
 
 1. `SITE_URL`, se definida (ex.: `https://qr.exemplo.com.br`);
-2. senão, `VERCEL_PROJECT_PRODUCTION_URL`, que a Vercel define com o domínio de produção do projeto;
+2. senão, em qualquer build da Vercel, `https://gerador-de-qrcode.lucasbittencourt.dev` (`productionUrl`);
 3. senão, `http://localhost:3000` (desenvolvimento).
 
-Se o projeto tiver domínio próprio, defina `SITE_URL` na Vercel para não depender da escolha automática.
+Os previews também apontam o canonical para produção, o que é inofensivo porque respondem `noindex`.
+
+Outros hosts que servem o mesmo projeto ficam em `legacyHosts` no `next.config.js` (hoje `qrcode-generator.lucasbittencourt.dev`). Cada um responde 308, caminho por caminho, para o domínio canônico, para buscadores e IAs enxergarem um site só.
 
 ## Páginas
 
 - `/`: escolha do tipo. Título e descrição genéricos, FAQ geral.
-- `/<tipo>` (`/pix`, `/wifi`, `/whatsapp`…): uma página por tipo, pré-renderizada, com título, descrição, FAQ, HowTo e imagem própria. São as páginas de cauda longa ("gerador de QR Code PIX", "QR Code de Wi-Fi").
+- `/<tipo>` (`/pix`, `/wifi`, `/whatsapp`…): uma página por tipo, pré-renderizada, com H1 "Gerador de QR Code …", título, descrição, guia (texto sobre quando usar e o que saber; o do PIX é o mais longo, porque a busca por "qr code pix" é dominada por artigos), FAQ, links para tipos relacionados, HowTo e imagem própria. São as páginas de cauda longa ("gerador de QR Code PIX", "QR Code de Wi-Fi").
+- `/privacidade`: o que acontece com os dados. Todas as páginas têm um rodapé com o autor, o código-fonte, a privacidade e a data de `contentUpdatedAt`.
+
+O título de cada tipo só ganha o sufixo "| Gerador de QR" quando ainda não diz "Gerador".
+
 - A etapa de personalização não tem URL própria (aberta direto, não teria conteúdo), então não entra no sitemap.
 
 Os cards da página inicial são links reais (`<a href="/pix">`), para os buscadores encontrarem cada página.
 
 ## Dados estruturados (JSON-LD)
 
-- **Página inicial**: `WebPage`, `WebSite`, `WebApplication` (gratuito, `UtilitiesApplication`, lista de recursos), `Person` (autor) e `FAQPage`.
+- **Página inicial**: `WebPage`, `WebSite`, `WebApplication` (mesmo nome do `WebSite`, gratuito, `UtilitiesApplication`, lista de recursos, `sameAs` com o repositório), `Person` (autor) e `FAQPage`.
 - **Cada tipo**: `WebPage`, `HowTo` (as três etapas), `FAQPage` e `BreadcrumbList`.
 
 As perguntas do `FAQPage` aparecem na página (o Google só usa FAQ estruturado visível). O JSON-LD é escapado para nunca fechar a tag `<script>`.
@@ -73,7 +79,7 @@ Cada página tem a própria imagem de 1200×630 (`/og` e `/og/<tipo>`), gerada n
 
 ## Ações manuais (fora do repositório)
 
-1. **Domínio**: se houver domínio próprio, defina-o como principal na Vercel (Settings → Domains) e `SITE_URL` nas variáveis de ambiente. Redirecione as outras variantes (www, `*.vercel.app`) para ele.
+1. **Domínio**: deixe `gerador-de-qrcode.lucasbittencourt.dev` como principal na Vercel (Settings → Domains). Ao trocar de domínio, mude `productionUrl` no `next.config.js` (ou defina `SITE_URL`) e acrescente o antigo a `legacyHosts`.
 2. **Vercel Firewall**: confira que nenhuma regra de proteção contra bots bloqueia os crawlers permitidos acima. Um `Allow` no robots.txt não adianta se o firewall responder 403.
 3. **Google Search Console**: adicione a propriedade do domínio (verificação por DNS) e envie `/sitemap.xml`. Para verificar por meta tag, defina `GOOGLE_SITE_VERIFICATION` na Vercel.
 4. **Bing Webmaster Tools**: importe do Search Console (ou defina `BING_SITE_VERIFICATION`) e envie o sitemap. O índice do Bing também alimenta buscas com IA.

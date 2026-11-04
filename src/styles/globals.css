@@ -2533,6 +2533,322 @@
     }
   }
 
+  /* Perks: the promises (free, no sign-up...) shown on the page, not only in the meta tags. */
+  .perks {
+    margin: 20px 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .perks li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px 5px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-card);
+    font-size: 13.5px;
+    font-weight: 600;
+  }
+
+  .perks svg {
+    width: 14px;
+    height: 14px;
+    flex: none;
+    color: #16a34a;
+  }
+
+  .perks--compact {
+    margin-top: 10px;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .perks--compact li {
+    padding: 3px 10px 3px 8px;
+    font-size: 12.5px;
+  }
+
+  .type-card {
+    position: relative;
+  }
+
+  /* Guide: the type page's own text below the form, set for reading. */
+  .guide {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    max-width: 68ch;
+  }
+
+  .guide__title {
+    margin: 0 0 8px;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+  }
+
+  .guide__text {
+    margin: 0;
+    color: var(--color-muted-foreground);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .guide__text + .guide__text {
+    margin-top: 10px;
+  }
+
+  .guide__sources {
+    margin: 0;
+    color: var(--color-muted-foreground);
+    font-size: 13.5px;
+  }
+
+  .guide__sources a,
+  .site-footer a,
+  .legal a {
+    color: var(--color-foreground);
+    text-decoration: underline;
+    text-decoration-color: var(--color-border);
+    text-underline-offset: 3px;
+    transition: text-decoration-color var(--duration) var(--ease);
+  }
+
+  .guide__sources a:hover,
+  .site-footer a:hover,
+  .legal a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  /* Related types: real links between the type pages. */
+  .related {
+    margin-top: 48px;
+  }
+
+  .related__title {
+    margin: 0 0 16px;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .related__grid {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .related-card {
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-tile);
+    background: var(--color-card);
+    color: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      border-color var(--duration) var(--ease),
+      background-color var(--duration) var(--ease);
+  }
+
+  .related-card:hover {
+    border-color: var(--hover-border);
+    background: var(--hover-surface);
+  }
+
+  .related-card__icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    color: var(--hue);
+  }
+
+  .related-card__icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .related-card__name {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .related-card__arrow {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    color: var(--color-muted-foreground);
+  }
+
+  /* Direct link (WhatsApp): the wa.me address the code opens, ready to copy. */
+  .direct-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 24px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .direct-link__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .direct-link__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-muted-foreground);
+  }
+
+  .direct-link__url {
+    overflow: hidden;
+    color: var(--color-foreground);
+    font-size: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Footer: author, source code, privacy and the content date on every page. */
+  .site-footer {
+    padding: 24px 24px calc(28px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--color-border);
+    color: var(--color-muted-foreground);
+    font-size: 13.5px;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  .site-footer p {
+    margin: 0;
+  }
+
+  /* Privacy page: one readable column. */
+  .legal {
+    max-width: 68ch;
+    margin: 0 auto;
+  }
+
+  .legal__brand {
+    display: inline-block;
+    margin-bottom: 24px;
+    text-decoration: none;
+  }
+
+  .legal h2 {
+    margin: 32px 0 8px;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .legal p:not(.lead) {
+    margin: 0;
+    color: var(--color-muted-foreground);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  @media (max-width: 1023px) {
+    /* The footer now ends the page, so it, not the main column, clears the fixed action bar. */
+    .app .main {
+      padding-bottom: 48px;
+    }
+
+    .app:not([data-step='1']) .site-footer {
+      padding-bottom: calc(var(--actions-clearance) + 16px + env(safe-area-inset-bottom));
+    }
+
+    /* Stacked, the guide and the related links follow the preview, with the FAQ. */
+    .app[data-step='2'] .guide,
+    .app[data-step='2'] .related {
+      order: 1;
+    }
+
+    .app[data-step='2'] .guide {
+      margin-top: 16px;
+    }
+  }
+
+  @media (max-width: 760px) {
+    /* Two compact columns, so PIX, Wi-Fi and WhatsApp come up within the first screens. */
+    .picker__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .type-card {
+      min-height: 0;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 14px;
+    }
+
+    .type-card__text {
+      display: none;
+    }
+
+    .type-card__badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+
+    .perks {
+      margin-top: 16px;
+      gap: 6px;
+    }
+
+    .perks li {
+      font-size: 12.5px;
+      padding: 4px 10px 4px 8px;
+    }
+
+    .step__head .perks {
+      grid-column: 1 / -1;
+      margin-top: 0;
+    }
+
+    /* Secondary actions at a comfortable thumb size. */
+    .step__head > [data-slot='button'],
+    .card__head > [data-slot='button'],
+    .direct-link [data-slot='button'] {
+      min-height: 44px;
+    }
+
+    .direct-link {
+      padding: 12px 18px;
+    }
+
+    .related__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .site-footer {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

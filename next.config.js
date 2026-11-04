@@ -1,12 +1,31 @@
 // The canonical origin, resolved once at build and inlined into server and client code,
 // so a URL change in the browser keeps canonical, og:url and JSON-LD on the real domain.
-// SITE_URL wins; on Vercel the production domain comes from VERCEL_PROJECT_PRODUCTION_URL.
-const siteUrl = (
-  process.env.SITE_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : 'http://localhost:3000')
-).replace(/\/+$/, '');
+// SITE_URL wins; any Vercel build (production or preview) uses the production domain.
+// Previews still answer noindex, so pointing their canonical at production is harmless.
+const productionUrl = 'https://gerador-de-qrcode.lucasbittencourt.dev';
+const siteUrl = (process.env.SITE_URL ?? (process.env.VERCEL ? productionUrl : 'http://localhost:3000')).replace(
+  /\/+$/,
+  '',
+);
+
+// Other hosts that serve this project. Each one 308s, path for path, to the canonical origin,
+// so search engines and AI crawlers see one site instead of duplicates.
+const legacyHosts = ['qrcode-generator.lucasbittencourt.dev'];
+
+// Sent with every response. The CSP only sets what can't break the app (no framing, no plugins,
+// no <base> or form hijacking); scripts and styles stay unrestricted because Next and the
+// Vercel analytics inject inline code that a strict policy would need nonces for.
+const securityHeaders = [
+  {
+    key: 'Content-Security-Policy',
+    value: "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'",
+  },
+  { key: 'X-Frame-Options', value: 'DENY' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  // The share sheet and clipboard stay; nothing here uses the camera, microphone or location.
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()' },
+];
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -22,15 +41,26 @@ const nextConfig = {
   // Icons and the manifest keep their names across deploys, so they can't be immutable: a day
   // fresh, then served from cache while revalidating for a week. Hashed /_next/static files
   // (scripts, CSS, the font) are already cached for a year; robots and sitemap stay short.
+  async redirects() {
+    return legacyHosts.map((host) => ({
+      source: '/:path*',
+      has: [{ type: 'host', value: host }],
+      destination: `${siteUrl}/:path*`,
+      permanent: true,
+    }));
+  },
   async headers() {
     const icons = 'public, max-age=86400, stale-while-revalidate=604800';
     return [
-      '/favicon.svg',
-      '/icon-:size.png',
-      '/icon-maskable-512.png',
-      '/apple-touch-icon.png',
-      '/manifest.webmanifest',
-    ].map((source) => ({ source, headers: [{ key: 'Cache-Control', value: icons }] }));
+      { source: '/:path*', headers: securityHeaders },
+      ...[
+        '/favicon.svg',
+        '/icon-:size.png',
+        '/icon-maskable-512.png',
+        '/apple-touch-icon.png',
+        '/manifest.webmanifest',
+      ].map((source) => ({ source, headers: [{ key: 'Cache-Control', value: icons }] })),
+    ];
   },
 };
 

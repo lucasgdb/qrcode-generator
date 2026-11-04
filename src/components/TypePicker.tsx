@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react';
 
 import Brand from './Brand';
 import FaqList from './FaqList';
+import Perks from './Perks';
 import { Badge } from './ui/badge';
 import { TypeIcon } from './icons';
 import { routeHref } from '../hooks/useRoute';
@@ -22,9 +23,12 @@ export default function TypePicker({ onSelect }: TypePickerProps) {
       <header className="picker__head">
         <Brand />
         <h1 id="picker-title" className="display">
-          Que QR Code você quer criar?
+          Gerador de QR Code grátis
         </h1>
-        <p className="lead">Escolha um tipo. Dá para trocar depois sem perder o que você digitou.</p>
+        <p className="lead">
+          Que QR Code você quer criar? Escolha um tipo; dá para trocar depois sem perder o que você digitou.
+        </p>
+        <Perks />
       </header>
 
       <ul className="picker__grid">
@@ -50,8 +54,16 @@ export default function TypePicker({ onSelect }: TypePickerProps) {
                 </span>
                 <span className="type-card__text">{type.description}</span>
               </span>
-              {type.id === 'link' ? <Badge variant="ink">Mais usado</Badge> : null}
-              {type.isNew ? <Badge variant="ink">Novo</Badge> : null}
+              {type.id === 'link' ? (
+                <Badge variant="ink" className="type-card__badge">
+                  Mais usado
+                </Badge>
+              ) : null}
+              {type.isNew ? (
+                <Badge variant="ink" className="type-card__badge">
+                  Novo
+                </Badge>
+              ) : null}
             </a>
           </li>
         ))}
