@@ -31,7 +31,7 @@ O domínio é resolvido no `next.config.js` e embutido no build, para servidor e
 
 Os previews também apontam o canonical para produção, o que é inofensivo porque respondem `noindex`.
 
-Outros hosts que servem o mesmo projeto ficam em `legacyHosts` no `next.config.js` (hoje `qrcode-generator.lucasbittencourt.dev`). Cada um responde 308, caminho por caminho, para o domínio canônico, para buscadores e IAs enxergarem um site só.
+Outros hosts do projeto redirecionam na própria Vercel (Settings → Domains → Edit → redirecionar para o domínio canônico, com 308). Hoje é o caso de `qrcode-generator.lucasbittencourt.dev`. Assim buscadores e IAs enxergam um site só.
 
 ## Páginas
 
@@ -79,7 +79,7 @@ Cada página tem a própria imagem de 1200×630 (`/og` e `/og/<tipo>`), gerada n
 
 ## Ações manuais (fora do repositório)
 
-1. **Domínio**: deixe `gerador-de-qrcode.lucasbittencourt.dev` como principal na Vercel (Settings → Domains). Ao trocar de domínio, mude `productionUrl` no `next.config.js` (ou defina `SITE_URL`) e acrescente o antigo a `legacyHosts`.
+1. **Domínio**: na Vercel (Settings → Domains), todo domínio que não seja `gerador-de-qrcode.lucasbittencourt.dev` deve redirecionar para ele com 308. Ao trocar de domínio, mude `productionUrl` no `next.config.js` (ou defina `SITE_URL`) e configure o antigo para redirecionar ao novo.
 2. **Vercel Firewall**: confira que nenhuma regra de proteção contra bots bloqueia os crawlers permitidos acima. Um `Allow` no robots.txt não adianta se o firewall responder 403.
 3. **Google Search Console**: adicione a propriedade do domínio (verificação por DNS) e envie `/sitemap.xml`. Para verificar por meta tag, defina `GOOGLE_SITE_VERIFICATION` na Vercel.
 4. **Bing Webmaster Tools**: importe do Search Console (ou defina `BING_SITE_VERIFICATION`) e envie o sitemap. O índice do Bing também alimenta buscas com IA.

@@ -8,10 +8,6 @@ const siteUrl = (process.env.SITE_URL ?? (process.env.VERCEL ? productionUrl : '
   '',
 );
 
-// Other hosts that serve this project. Each one 308s, path for path, to the canonical origin,
-// so search engines and AI crawlers see one site instead of duplicates.
-const legacyHosts = ['qrcode-generator.lucasbittencourt.dev'];
-
 // Sent with every response. The CSP only sets what can't break the app (no framing, no plugins,
 // no <base> or form hijacking); scripts and styles stay unrestricted because Next and the
 // Vercel analytics inject inline code that a strict policy would need nonces for.
@@ -41,14 +37,6 @@ const nextConfig = {
   // Icons and the manifest keep their names across deploys, so they can't be immutable: a day
   // fresh, then served from cache while revalidating for a week. Hashed /_next/static files
   // (scripts, CSS, the font) are already cached for a year; robots and sitemap stay short.
-  async redirects() {
-    return legacyHosts.map((host) => ({
-      source: '/:path*',
-      has: [{ type: 'host', value: host }],
-      destination: `${siteUrl}/:path*`,
-      permanent: true,
-    }));
-  },
   async headers() {
     const icons = 'public, max-age=86400, stale-while-revalidate=604800';
     return [
