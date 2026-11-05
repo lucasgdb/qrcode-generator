@@ -53,6 +53,7 @@ function sanitizeLogo(raw: unknown): LogoState | null {
     dataUrl: logo.dataUrl,
     name: typeof logo.name === 'string' ? logo.name.slice(0, 60) : 'logo',
     size: clamp(Number(logo.size), 8, 32, 20),
+    ...(typeof logo.preset === 'string' ? { preset: logo.preset.slice(0, 40) } : {}),
   };
 }
 

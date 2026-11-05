@@ -511,6 +511,8 @@ export interface LogoState {
   dataUrl: string;
   name: string;
   size: number;
+  /** The ready-made logo it came from (see logo-presets.ts); absent for an uploaded file. */
+  preset?: string;
 }
 
 export interface QrStyle {

@@ -1,4 +1,14 @@
-import { CircleAlert, CircleCheck, Frame, ImagePlus, Palette, RotateCcw, Shapes, type LucideIcon } from 'lucide-react';
+import {
+  Ban,
+  CircleAlert,
+  CircleCheck,
+  Frame,
+  ImagePlus,
+  Palette,
+  RotateCcw,
+  Shapes,
+  type LucideIcon,
+} from 'lucide-react';
 import { useMemo, useRef, useState, type CSSProperties } from 'react';
 
 import { UploadIcon } from './icons';
@@ -10,6 +20,7 @@ import { Label } from './ui/label';
 import { Slider } from './ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { processLogoFile } from '../lib/export';
+import { logoPresetDataUrl, logoPresetsFor } from '../lib/logo-presets';
 import { buildGeometry, generateMatrix, renderQrSvg, type QrGeometry } from '../lib/qr';
 import { contrastRatio, formatRatio, normalizeHex, type ScanAudit } from '../lib/scan';
 import {
@@ -21,7 +32,9 @@ import {
   type EyeShape,
   type FrameId,
   type ModuleShape,
+  type LogoState,
   type QrStyle,
+  type QrTypeId,
 } from '../lib/types';
 
 type DesignTab = 'frame' | 'colors' | 'shape' | 'logo';
@@ -36,6 +49,8 @@ export interface DesignStepProps {
   audit: ScanAudit;
   /** The chosen type's colour, for the step's icon. */
   hue: string;
+  /** The chosen type, whose fitting ready-made logos are listed first. */
+  type: QrTypeId;
 }
 
 const TABS: { id: DesignTab; label: string; description: string; Icon: LucideIcon }[] = [
@@ -149,7 +164,7 @@ const MOBILE_SEGMENTED_LIST =
 const MOBILE_SEGMENTED_TRIGGER =
   'max-[760px]:h-10! max-[760px]:min-w-0 max-[760px]:flex-1! max-[760px]:rounded-none! max-[760px]:border-0! max-[760px]:border-l! max-[760px]:border-input! max-[760px]:px-2! max-[760px]:text-[13px]! max-[760px]:first:border-l-0! max-[760px]:focus-visible:ring-inset';
 
-export default function DesignStep({ style, onChange, onError, onReset, audit, hue }: DesignStepProps) {
+export default function DesignStep({ style, onChange, onError, onReset, audit, hue, type }: DesignStepProps) {
   const [tab, setTab] = useState<DesignTab>('frame');
   const current = TABS.find((item) => item.id === tab) ?? TABS[0];
   const inputRef = useRef<HTMLInputElement>(null);
@@ -185,6 +200,28 @@ export default function DesignStep({ style, onChange, onError, onReset, audit, h
     [style],
   );
 
+  const presets = useMemo(
+    () => logoPresetsFor(type).map((preset) => ({ ...preset, dataUrl: logoPresetDataUrl(preset) })),
+    [type],
+  );
+
+  function applyLogo(logo: Omit<LogoState, 'size'>) {
+    onChange({
+      logo: { ...logo, size: style.logo?.size ?? 20 },
+      // A logo hides modules; raise the recovery level so the code keeps reading.
+      ...(style.errorCorrection === 'L' || style.errorCorrection === 'M' ? { errorCorrection: 'Q' as const } : {}),
+    });
+  }
+
+  function pickPreset(id: string) {
+    if (id === 'none') {
+      onChange({ logo: null });
+      return;
+    }
+    const preset = presets.find((item) => item.id === id);
+    if (preset) applyLogo({ dataUrl: preset.dataUrl, name: preset.label, preset: preset.id });
+  }
+
   async function handleFiles(files: FileList | null) {
     const file = files?.item(0);
     if (!file) return;
@@ -192,11 +229,7 @@ export default function DesignStep({ style, onChange, onError, onReset, audit, h
     setBusy(true);
     try {
       const processed = await processLogoFile(file);
-      onChange({
-        logo: { dataUrl: processed.dataUrl, name: processed.name, size: style.logo?.size ?? 20 },
-        // A logo hides modules; raise the recovery level so the code keeps reading.
-        ...(style.errorCorrection === 'L' || style.errorCorrection === 'M' ? { errorCorrection: 'Q' as const } : {}),
-      });
+      applyLogo({ dataUrl: processed.dataUrl, name: processed.name });
     } catch (error) {
       onError(error instanceof Error ? error.message : 'Não foi possível usar esta imagem.');
     } finally {
@@ -437,45 +470,57 @@ export default function DesignStep({ style, onChange, onError, onReset, audit, h
                   onChange={(event) => handleFiles(event.target.files)}
                 />
 
-                {style.logo ? (
-                  <>
-                    <div className="logo-file">
-                      <span className="logo-file__thumb">
+                <div className="field">
+                  <span className="field__label" id="logo-presets-label">
+                    Logos prontos
+                  </span>
+                  <OptionGroup<string>
+                    label="Logos prontos"
+                    className="logo-presets"
+                    value={style.logo ? (style.logo.preset ?? null) : 'none'}
+                    onValueChange={pickPreset}
+                  >
+                    <OptionItem
+                      value="none"
+                      className="logo-preset logo-preset--none"
+                      aria-label="Sem logo"
+                      title="Sem logo"
+                    >
+                      <Ban aria-hidden="true" />
+                    </OptionItem>
+                    {presets.map((preset) => (
+                      <OptionItem
+                        key={preset.id}
+                        value={preset.id}
+                        className="logo-preset"
+                        aria-label={preset.label}
+                        title={preset.label}
+                      >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={style.logo.dataUrl} alt="" width={40} height={40} />
-                      </span>
-                      <span className="logo-file__name">{style.logo.name}</span>
-                      <Button variant="link" onClick={() => inputRef.current?.click()}>
-                        Trocar
-                      </Button>
-                      <Button variant="link" className="text-destructive" onClick={() => onChange({ logo: null })}>
-                        Remover
-                      </Button>
-                    </div>
+                        <img src={preset.dataUrl} alt="" width={40} height={40} loading="lazy" decoding="async" />
+                      </OptionItem>
+                    ))}
+                  </OptionGroup>
+                </div>
 
-                    <div className="field">
-                      <div className="range-head">
-                        <span className="field__label" id="logo-size-label">
-                          Tamanho do logo
-                        </span>
-                        <span className="range-head__value">{style.logo.size}%</span>
-                      </div>
-                      <Slider
-                        aria-labelledby="logo-size-label"
-                        min={8}
-                        max={32}
-                        value={style.logo.size}
-                        onValueChange={(value) =>
-                          onChange({ logo: style.logo ? { ...style.logo, size: value as number } : null })
-                        }
-                      />
-                      <p className="field__hint">Até 24% da largura o código continua fácil de ler.</p>
-                    </div>
-                  </>
+                {style.logo && !style.logo.preset ? (
+                  <div className="logo-file">
+                    <span className="logo-file__thumb">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={style.logo.dataUrl} alt="" width={40} height={40} />
+                    </span>
+                    <span className="logo-file__name">{style.logo.name}</span>
+                    <Button variant="link" onClick={() => inputRef.current?.click()}>
+                      Trocar
+                    </Button>
+                    <Button variant="link" className="text-destructive" onClick={() => onChange({ logo: null })}>
+                      Remover
+                    </Button>
+                  </div>
                 ) : (
                   <button
                     type="button"
-                    className={`dropzone${dragOver ? ' dropzone--over' : ''}`}
+                    className={`dropzone dropzone--compact${dragOver ? ' dropzone--over' : ''}`}
                     onClick={() => inputRef.current?.click()}
                     disabled={busy}
                     onDragOver={(event) => {
@@ -492,12 +537,31 @@ export default function DesignStep({ style, onChange, onError, onReset, audit, h
                     <span className="dropzone__icon">
                       <UploadIcon />
                     </span>
-                    <span className="dropzone__title">
-                      {busy ? 'Preparando a imagem…' : 'Envie ou arraste seu logo'}
-                    </span>
+                    <span className="dropzone__title">{busy ? 'Preparando a imagem…' : 'Ou envie o seu logo'}</span>
                     <span className="dropzone__text">PNG, JPG, WebP ou SVG até 1,5&nbsp;MB</span>
                   </button>
                 )}
+
+                {style.logo ? (
+                  <div className="field">
+                    <div className="range-head">
+                      <span className="field__label" id="logo-size-label">
+                        Tamanho do logo
+                      </span>
+                      <span className="range-head__value">{style.logo.size}%</span>
+                    </div>
+                    <Slider
+                      aria-labelledby="logo-size-label"
+                      min={8}
+                      max={32}
+                      value={style.logo.size}
+                      onValueChange={(value) =>
+                        onChange({ logo: style.logo ? { ...style.logo, size: value as number } : null })
+                      }
+                    />
+                    <p className="field__hint">Até 24% da largura o código continua fácil de ler.</p>
+                  </div>
+                ) : null}
               </>
             ) : null}
           </div>

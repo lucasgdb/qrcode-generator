@@ -14,7 +14,7 @@ Uma bancada para criar, personalizar e conferir QR Codes no navegador. O código
 
 - **Link** para uma página, **redes sociais** (Instagram, TikTok, YouTube, X, LinkedIn, Facebook, Threads, GitHub), **vídeo** (links do YouTube viram youtu.be, mais curtos), **texto** livre, **Wi-Fi**, **contato (vCard)**, **PIX** (BR Code estático com CRC16), **e-mail**, **SMS**, **WhatsApp**, **telefone**, **localização** e **evento** de calendário.
 - **Estilo**: cor do código e do fundo com presets, formato dos módulos (quadrado, arredondado, pontos), formato dos olhos (quadrado, arredondado, círculo), margem de silêncio e nível de correção de erros.
-- **Logo** enviado por arquivo ou arrastado, com tamanho ajustável e aviso quando a área coberta pede uma correção maior.
+- **Logo** pronto (39 opções: ícones de link, Wi-Fi, e-mail, cardápio e outros, mais marcas como WhatsApp, Instagram, Pix, Nubank, Mercado Livre, Amazon, iFood e Google Maps, com as que combinam com o tipo escolhido primeiro) ou enviado por arquivo, com tamanho ajustável e aviso quando a área coberta pede uma correção maior. As marcas vêm do [Simple Icons](https://simpleicons.org) (CC0) e os ícones do [Lucide](https://lucide.dev).
 - **Exportação** em PNG (512 a 4096 px), SVG vetorial e JPEG, com nome de arquivo editável e cópia da imagem para a área de transferência.
 - **Conferência de leitura** ao vivo: contraste, quantidade de módulos, versão, correção e avisos de margem, inversão e densidade.
 - **Conteúdo codificado** visível e copiável (útil para PIX e vCard).

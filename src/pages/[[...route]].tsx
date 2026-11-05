@@ -346,6 +346,7 @@ export default function Home({ route }: HomeProps) {
                       onReset={() => studio.patchStyle({ ...DEFAULT_STYLE, logo: style.logo })}
                       audit={audit}
                       hue={TYPE_HUE[typeDef.id]}
+                      type={typeDef.id}
                     />
 
                     <section className="card card--form" aria-labelledby="file-title">
