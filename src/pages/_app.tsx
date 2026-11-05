@@ -3,6 +3,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { AppProps } from 'next/app';
 import localFont from 'next/font/local';
 import Head from 'next/head';
+import { useEffect } from 'react';
 
 import { TooltipProvider } from '../components/ui/tooltip';
 
@@ -18,7 +19,35 @@ const geist = localFont({
   adjustFontFallback: 'Arial',
 });
 
+/**
+ * Registers the offline worker (production only: in dev it would cache hot-reload chunks), then
+ * hands it this page's address and assets so the first visit is cached too.
+ */
+function useServiceWorker() {
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'production' || !('serviceWorker' in navigator)) return;
+    const register = () => {
+      navigator.serviceWorker
+        .register('/sw.js', { scope: '/' })
+        .then(() => navigator.serviceWorker.ready)
+        .then((registration) => {
+          const urls = [
+            window.location.pathname,
+            ...performance.getEntriesByType('resource').map((entry) => entry.name),
+          ];
+          registration.active?.postMessage({ type: 'cache', urls });
+        })
+        .catch(() => {});
+    };
+    if (document.readyState === 'complete') register();
+    else window.addEventListener('load', register, { once: true });
+    return () => window.removeEventListener('load', register);
+  }, []);
+}
+
 export default function App({ Component, pageProps }: AppProps) {
+  useServiceWorker();
+
   return (
     <TooltipProvider delay={400}>
       <Head>

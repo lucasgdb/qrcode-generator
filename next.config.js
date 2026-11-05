@@ -47,7 +47,10 @@ const nextConfig = {
         '/icon-maskable-512.png',
         '/apple-touch-icon.png',
         '/manifest.webmanifest',
+        '/screenshots/:file*',
       ].map((source) => ({ source, headers: [{ key: 'Cache-Control', value: icons }] })),
+      // The service worker is always revalidated, so a new version reaches users on their next visit.
+      { source: '/sw.js', headers: [{ key: 'Cache-Control', value: 'no-cache' }] },
     ];
   },
 };

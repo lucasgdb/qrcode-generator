@@ -17,6 +17,11 @@ export default function Document() {
         <meta name="application-name" content={site.name} />
         <meta name="author" content={author.name} />
         <meta name="theme-color" content={site.themeColor} />
+        {/* Installed on iOS: opens full screen with the short name under the icon. */}
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content={site.name} />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="format-detection" content="telephone=no" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />

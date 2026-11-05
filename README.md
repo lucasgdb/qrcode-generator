@@ -2,13 +2,13 @@
 
 Uma bancada para criar, personalizar e conferir QR Codes no navegador. O código é gerado no cliente, sem enviar conteúdo para nenhum servidor, e sai em PNG, SVG ou JPEG.
 
-![Etapa 1: escolha entre 13 tipos de QR Code](docs/screenshots/1-tipo.png)
+![Etapa 1: escolha entre 13 tipos de QR Code](docs/screenshots/1-tipo.jpg)
 
 | Etapa 2: conteúdo, com a prévia no celular                             | Etapa 3: moldura, cores, formato e logo                                      |
 | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| ![Etapa 2 com um QR Code de WhatsApp](docs/screenshots/2-conteudo.png) | ![Etapa 3 com a moldura Balão em verde](docs/screenshots/3-personalizar.png) |
+| ![Etapa 2 com um QR Code de WhatsApp](docs/screenshots/2-conteudo.jpg) | ![Etapa 3 com a moldura Balão em verde](docs/screenshots/3-personalizar.jpg) |
 
-![As três etapas no celular](docs/screenshots/celular.png)
+![As três etapas no celular](docs/screenshots/celular.jpg)
 
 ## O que dá para criar
 
@@ -89,3 +89,4 @@ src/
 - Módulos quadrados são desenhados como faixas horizontais, o que reduz bastante o path do SVG (prévia mais leve e arquivo menor).
 - A matriz e o desenho seguem o texto com `useDeferredValue`, então digitar conteúdo longo nunca trava o campo.
 - Nenhum conteúdo, chave PIX, senha de Wi-Fi ou logo é enviado para fora do navegador.
+- Instalável como app (PWA) no celular e no desktop, com capturas de tela no diálogo de instalação, atalhos para Link, PIX, Wi-Fi e WhatsApp e funcionamento offline por um service worker próprio (`public/sw.js`): páginas pela rede primeiro, arquivos com hash pelo cache. As capturas ficam em `public/screenshots` e precisam ser refeitas quando a interface mudar.
